@@ -18,21 +18,27 @@ test('normalizeCode', () => {
     assert.equal(normalizeCode('ABCO12'), ''); // O and 1 aren't in the alphabet
 });
 
-test('normalizeMinute', () => {
-    assert.equal(normalizeMinute('67'), '67');
-    assert.equal(normalizeMinute("67'"), '67');
-    assert.equal(normalizeMinute('45+2'), '45+2');
-    assert.equal(normalizeMinute(' 90 + 3 '), '90+3');
-    assert.equal(normalizeMinute('07'), '7');
+test('normalizeMinute takes MM:SS, with or without the colon', () => {
+    assert.equal(normalizeMinute('67:23'), '67:23');
+    assert.equal(normalizeMinute(' 67 : 23 '), '67:23');
+    assert.equal(normalizeMinute('6723'), '67:23');
+    assert.equal(normalizeMinute('523'), '5:23');
+    assert.equal(normalizeMinute('0:45'), '0:45');
+    assert.equal(normalizeMinute('07:05'), '7:05');
+    assert.equal(normalizeMinute('9215'), '92:15');
+    assert.equal(normalizeMinute('100:00'), '100:00');
+    assert.equal(normalizeMinute('67'), null); // seconds required
+    assert.equal(normalizeMinute('67:6'), null);
+    assert.equal(normalizeMinute('67:60'), null);
+    assert.equal(normalizeMinute('45+2'), null);
     assert.equal(normalizeMinute(''), null);
-    assert.equal(normalizeMinute('45+'), null);
     assert.equal(normalizeMinute('abc'), null);
-    assert.equal(normalizeMinute('1000'), null);
+    assert.equal(normalizeMinute('1000:00'), null);
 });
 
-test('minuteSortValue orders stoppage time', () => {
-    const sorted = ['46', '45+2', '45', '90+10', '90+3'].sort((a, b) => minuteSortValue(a) - minuteSortValue(b));
-    assert.deepEqual(sorted, ['45', '45+2', '46', '90+3', '90+10']);
+test('minuteSortValue orders by clock time', () => {
+    const sorted = ['46:00', '45:59', '9:30', '90:05', '45:00'].sort((a, b) => minuteSortValue(a) - minuteSortValue(b));
+    assert.deepEqual(sorted, ['9:30', '45:00', '45:59', '46:00', '90:05']);
 });
 
 test('season rolls over in July', () => {

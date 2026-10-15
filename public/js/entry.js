@@ -150,7 +150,7 @@ $('sub-save').addEventListener('click', async () => {
     if (form.sub && form.sub.status === 'done') {
         const minute = normalizeMinute($('edit-minute').value);
         if (!minute) {
-            $('sub-error').textContent = 'Enter the minute, like 67 or 45+2.';
+            $('sub-error').textContent = 'Enter the match time as MM:SS, like 67:23.';
             return;
         }
         data.minute = minute;
@@ -258,7 +258,7 @@ function openMinuteDialog(list) {
     // Blank, not prefilled: a stale minute accepted by habit is worse than
     // typing two digits.
     $('minute').value = '';
-    $('minute').placeholder = lastMinute ? 'last: ' + lastMinute : '67';
+    $('minute').placeholder = lastMinute ? 'last: ' + lastMinute : '67:23';
     $('minute-error').textContent = '';
     $('minute-dialog').showModal();
     $('minute').focus();
@@ -270,10 +270,10 @@ $('execute-all').addEventListener('click', () => {
         openMinuteDialog(pending);
     }
 });
-$('minute-plus').addEventListener('click', () => {
+$('minute-colon').addEventListener('click', () => {
     const v = $('minute').value.trim();
-    if (v && !v.includes('+')) {
-        $('minute').value = v + '+';
+    if (v && !v.includes(':')) {
+        $('minute').value = v + ':';
     }
     $('minute').focus();
 });
@@ -287,7 +287,7 @@ $('minute').addEventListener('keydown', (e) => {
 $('minute-ok').addEventListener('click', async () => {
     const minute = normalizeMinute($('minute').value);
     if (!minute) {
-        $('minute-error').textContent = 'Enter the minute, like 67 or 45+2.';
+        $('minute-error').textContent = 'Enter the match time as MM:SS, like 67:23 (or 6723).';
         return;
     }
     // Skip any that were cancelled or executed elsewhere meanwhile.

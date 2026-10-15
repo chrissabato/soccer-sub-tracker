@@ -29,8 +29,12 @@ export function timeOfDay(sub) {
         : '';
 }
 
+// Match clock time as shown: "67:23" (older subs without seconds: "67’").
 export function minuteLabel(sub) {
-    return sub.minute ? escapeHtml(sub.minute) + '’' : '';
+    if (!sub.minute) {
+        return '';
+    }
+    return escapeHtml(sub.minute) + (sub.minute.includes(':') ? '' : '’');
 }
 
 // One sub as a card. opts.minute shows the time of day and minute column;

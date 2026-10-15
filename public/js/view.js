@@ -71,7 +71,7 @@ function render() {
     const latest = done.filter((s) => s.batchId === latestBatch);
     $('latest').classList.toggle('hidden', latest.length === 0);
     if (latest.length) {
-        $('latest-title').textContent = (latest.length === 1 ? 'Latest sub' : 'Latest subs') + ' · ' + latest[0].minute + '’';
+        $('latest-title').textContent = (latest.length === 1 ? 'Latest sub' : 'Latest subs') + ' · ' + latest[0].minute + (latest[0].minute.includes(':') ? '' : '’');
         $('latest-subs').innerHTML = latest.map((s) => subCard(s, game)).join('');
     }
     if (!subsLoaded) {

@@ -5,9 +5,9 @@ them live in the press box.
 
 - **Sub entry** (phone): one official queues subs for both teams (player
   OUT → player IN, picked from the roster). When play stops they tap
-  **Execute** on one sub or **Execute all**, then enter the match minute once
-  (`67`, `45+2`). Pending subs can be edited or cancelled. Executed subs can
-  be edited (players, minute).
+  **Execute** on one sub or **Execute all**, then enter the match clock time
+  once as MM:SS (`67:23`, or `6723` on a number pad). Pending subs can be
+  edited or cancelled. Executed subs can be edited (players, time).
 - **Viewer** (press box): read-only and live. It shows the latest stoppage's
   subs highlighted (it flashes when a new one lands), pending subs per team,
   and the full log.

@@ -26,21 +26,23 @@ export function normalizeCode(input) {
     return CODE_PATTERN.test(code) ? code : '';
 }
 
-// Match minute as typed by the official: "67", "67'", "45+2", "90 + 3".
-// Returns the canonical form ("45+2") or null if it isn't a minute.
+// Match clock time as typed by the official, minutes and seconds:
+// "67:23", " 67 : 23 ", or digits only ("6723" -> 67:23, the last two
+// digits are always the seconds; phone number pads have no colon).
+// Returns the canonical "67:23" or null if it isn't a valid MM:SS.
 export function normalizeMinute(input) {
-    const m = String(input || '').replace(/[\s'’]/g, '').match(/^(\d{1,3})(?:\+(\d{1,2}))?$/);
-    if (!m) {
+    const s = String(input || '').replace(/\s/g, '');
+    const m = s.match(/^(\d{1,3}):(\d{2})$/) || s.match(/^(\d{1,3})(\d{2})$/);
+    if (!m || parseInt(m[2], 10) > 59) {
         return null;
     }
-    const base = String(parseInt(m[1], 10));
-    return m[2] ? base + '+' + parseInt(m[2], 10) : base;
+    return parseInt(m[1], 10) + ':' + m[2];
 }
 
-// Sort key for minutes so "45+2" lands between 45 and 46.
+// Seconds into the match for a "67:23" time, for sorting; -1 if unknown.
 export function minuteSortValue(minute) {
-    const m = String(minute || '').match(/^(\d+)(?:\+(\d+))?$/);
-    return m ? parseInt(m[1], 10) + (m[2] ? parseInt(m[2], 10) / 100 : 0) : -1;
+    const m = String(minute || '').match(/^(\d+):(\d{2})$/);
+    return m ? parseInt(m[1], 10) * 60 + parseInt(m[2], 10) : -1;
 }
 
 // Academic-year season label used in Presto URLs: July 2026–June 2027 is

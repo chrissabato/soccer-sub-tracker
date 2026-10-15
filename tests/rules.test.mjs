@@ -117,7 +117,7 @@ test('only editors write subs, rosters and game fields', async () => {
     const editor = as('creator');
     await assertSucceeds(setDoc(doc(editor, 'games', 'g1', 'subs', 'x'), pendingSub()));
     await assertSucceeds(updateDoc(doc(editor, 'games', 'g1', 'subs', 's1'), {
-        status: 'done', minute: '45+2', executedAt: serverTimestamp(), batchId: 'b1',
+        status: 'done', minute: '45:30', executedAt: serverTimestamp(), batchId: 'b1',
     }));
     await assertSucceeds(setDoc(doc(editor, 'games', 'g1', 'rosters', 'away'), {
         players: [{ number: '1', name: 'X' }], sourceUrl: '', updatedAt: serverTimestamp(),
@@ -142,6 +142,9 @@ test('sub shape is validated', async () => {
     const editor = as('creator');
     await assertFails(setDoc(doc(editor, 'games', 'g1', 'subs', 'a'), { ...pendingSub(), team: 'third' }));
     await assertFails(setDoc(doc(editor, 'games', 'g1', 'subs', 'b'), { ...pendingSub(), minute: 'soon' }));
+    await assertFails(setDoc(doc(editor, 'games', 'g1', 'subs', 'b2'), { ...pendingSub(), minute: '67:60' }));
+    await assertSucceeds(setDoc(doc(editor, 'games', 'g1', 'subs', 'b3'), { ...pendingSub(), status: 'done', minute: '67:23' }));
+    await assertSucceeds(setDoc(doc(editor, 'games', 'g1', 'subs', 'b4'), { ...pendingSub(), status: 'done', minute: '45+2' })); // pre-seconds data
     await assertFails(setDoc(doc(editor, 'games', 'g1', 'subs', 'c'), { ...pendingSub(), extra: 1 }));
     await assertFails(setDoc(doc(editor, 'games', 'g1', 'subs', 'd'), { ...pendingSub(), playerIn: player('1234') }));
 });
