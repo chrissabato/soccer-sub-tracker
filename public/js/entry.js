@@ -30,6 +30,9 @@ watchGame(gameId, (g) => {
     document.querySelectorAll('#team-toggle button').forEach((b) => {
         b.textContent = teamName(g, b.dataset.team);
     });
+    document.querySelectorAll('.add-team').forEach((b) => {
+        b.textContent = '+ ' + teamName(g, b.dataset.team) + ' sub';
+    });
     render();
 }, showError);
 watchRosters(gameId, (r) => { rosters = r; }, showError);
@@ -91,13 +94,13 @@ $('done').addEventListener('click', onListClick);
 
 // --- add / edit sub dialog ---
 
-let lastTeam = 'home';
 let form = null; // { sub (when editing), team, playerIn, playerOut }
 
-function openSubDialog(sub) {
+// Edits an existing sub, or adds one for `side` (from the team's add button).
+function openSubDialog(sub, side = 'home') {
     form = sub
         ? { sub, team: sub.team, playerIn: { ...sub.playerIn }, playerOut: { ...sub.playerOut } }
-        : { sub: null, team: lastTeam, playerIn: null, playerOut: null };
+        : { sub: null, team: side, playerIn: null, playerOut: null };
     $('sub-title').textContent = sub ? 'Edit sub' : 'Add sub';
     $('sub-save').textContent = sub ? 'Save' : 'Queue sub';
     const isDone = sub && sub.status === 'done';
@@ -156,9 +159,6 @@ $('sub-save').addEventListener('click', async () => {
     // don't wait for the server: a weak stadium signal mustn't hang the UI.
     const write = form.sub ? editSub(gameId, form.sub.id, data) : addSub(gameId, data);
     write.catch((err) => showError(new Error('A sub change was not saved: ' + err.message)));
-    if (!form.sub) {
-        lastTeam = form.team;
-    }
     $('sub-dialog').close();
 });
 
@@ -286,4 +286,6 @@ $('minute-ok').addEventListener('click', async () => {
     $('minute-dialog').close();
 });
 
-$('add').addEventListener('click', () => openSubDialog(null));
+document.querySelectorAll('.add-team').forEach((b) => {
+    b.addEventListener('click', () => openSubDialog(null, b.dataset.team));
+});

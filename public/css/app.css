@@ -198,6 +198,15 @@ td.del { width: 44px; }
 .sub .actions { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
 
 /* Entry page */
+.add-subs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0 0 16px; }
+.add-team {
+    min-height: 64px;
+    font-size: 17px;
+    background: var(--team);
+    border-color: var(--team);
+    color: var(--team-text);
+    overflow-wrap: anywhere;
+}
 body.entry main { padding-bottom: 96px; }
 .execute-bar {
     position: fixed;
