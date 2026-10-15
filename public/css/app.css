@@ -202,7 +202,8 @@ td.del { width: 44px; }
 .sub .in, .sub .out { display: block; overflow-wrap: anywhere; }
 .sub .in::before { content: "IN  "; font-weight: 700; color: var(--accent); font-size: 13px; }
 .sub .out::before { content: "OUT "; font-weight: 700; color: var(--danger); font-size: 13px; }
-.sub .minute { font-weight: 700; font-variant-numeric: tabular-nums; min-width: 3.5em; }
+.sub .minute { font-weight: 700; font-variant-numeric: tabular-nums; min-width: 4.5em; }
+.sub .minute .tod { display: block; font-size: 12px; font-weight: 500; color: var(--muted); white-space: nowrap; }
 .sub .actions { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
 
 /* Entry page */
@@ -317,6 +318,7 @@ body.viewer main { max-width: 1280px; }
 .status-dot.live { background: var(--accent); }
 
 .log td { font-size: 16px; }
+.log td.tod { color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; width: 96px; }
 .log td.minute { font-weight: 700; font-variant-numeric: tabular-nums; width: 64px; }
 
 .qr { background: #fff; padding: 8px; display: inline-block; border-radius: 8px; }

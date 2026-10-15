@@ -22,12 +22,23 @@ export function teamName(game, side) {
     return name || (side === 'home' ? 'Home' : 'Away');
 }
 
-// One sub as a card. opts.minute shows the minute column; opts.actions is
-// trusted HTML for the button area.
+// Time of day a sub was executed, e.g. "7:42 PM" ('' if not executed).
+export function timeOfDay(sub) {
+    return sub.executedAt
+        ? sub.executedAt.toDate().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
+        : '';
+}
+
+export function minuteLabel(sub) {
+    return sub.minute ? escapeHtml(sub.minute) + '’' : '';
+}
+
+// One sub as a card. opts.minute shows the time of day and minute column;
+// opts.actions is trusted HTML for the button area.
 export function subCard(sub, game, opts = {}) {
     return `
       <div class="sub team-${sub.team}" data-id="${escapeHtml(sub.id)}">
-        ${opts.minute ? `<span class="minute">${escapeHtml(sub.minute || '')}${sub.minute ? '’' : ''}</span>` : ''}
+        ${opts.minute ? `<span class="minute">${minuteLabel(sub)}<span class="tod">${escapeHtml(timeOfDay(sub))}</span></span>` : ''}
         <div class="swap">
           <span class="team-tag">${escapeHtml(teamName(game, sub.team))}</span>
           <span class="in">${escapeHtml(playerLabel(sub.playerIn))}</span>
@@ -41,11 +52,13 @@ export function divisionLabel(division) {
     return division === 'mens' ? "Men's soccer" : "Women's soccer";
 }
 
-// Executed subs, newest stoppage first, queue order within a stoppage.
+// Executed subs: newest time of day first, then away before home, then
+// queue order.
+const TEAM_ORDER = { away: 0, home: 1 };
 export function doneNewestFirst(subs) {
     return subs
         .filter((s) => s.status === 'done')
         .map((s, i) => ({ s, i, t: s.executedAt ? s.executedAt.toMillis() : Infinity }))
-        .sort((a, b) => (b.t - a.t) || (a.i - b.i))
+        .sort((a, b) => (b.t - a.t) || (TEAM_ORDER[a.s.team] - TEAM_ORDER[b.s.team]) || (a.i - b.i))
         .map((x) => x.s);
 }

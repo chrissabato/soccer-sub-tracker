@@ -1,7 +1,7 @@
 // Press box viewer: read-only, no login, updates live.
 import { watchGame, watchSubs } from './store.js';
 import { escapeHtml, playerLabel } from './lib.js';
-import { applyTeamColors, subCard, teamName, divisionLabel, doneNewestFirst } from './render.js';
+import { applyTeamColors, subCard, teamName, divisionLabel, doneNewestFirst, timeOfDay, minuteLabel } from './render.js';
 
 const $ = (id) => document.getElementById(id);
 const gameId = new URLSearchParams(location.search).get('g') || '';
@@ -58,7 +58,8 @@ function render() {
     const done = doneNewestFirst(subs);
     $('log').innerHTML = done.map((s) => `
         <tr class="team-${s.team}">
-          <td class="minute">${escapeHtml(s.minute || '')}${s.minute ? '’' : ''}</td>
+          <td class="tod">${escapeHtml(timeOfDay(s))}</td>
+          <td class="minute">${minuteLabel(s)}</td>
           <td><span class="team-tag">${escapeHtml(teamName(game, s.team))}</span></td>
           <td>${escapeHtml(playerLabel(s.playerIn))}</td>
           <td>${escapeHtml(playerLabel(s.playerOut))}</td>
