@@ -27,13 +27,9 @@ $('app').classList.remove('hidden');
 const base = new URL('.', location.href);
 const entryUrl = new URL('entry.html?g=' + encodeURIComponent(gameId), base).href;
 const viewUrl = new URL('view.html?g=' + encodeURIComponent(gameId), base).href;
-$('entry-link').href = $('go-entry').href = $('nav-entry').href = entryUrl;
-$('entry-link').textContent = entryUrl;
-$('view-link').href = $('nav-view').href = $('open-view').href = viewUrl;
-$('view-link').textContent = viewUrl;
-if (window.QRCode) {
-    new window.QRCode($('qr'), { text: viewUrl, width: 144, height: 144 });
-}
+$('nav-entry').href = entryUrl;
+$('nav-view').href = $('open-view').href = viewUrl;
+$('site-host').textContent = location.host;
 $('copy-view').addEventListener('click', async () => {
     try {
         await navigator.clipboard.writeText(viewUrl);
@@ -41,14 +37,14 @@ $('copy-view').addEventListener('click', async () => {
     } catch (err) {
         $('copy-view').textContent = 'Copy failed';
     }
-    setTimeout(() => { $('copy-view').textContent = 'Copy viewer link'; }, 1500);
+    setTimeout(() => { $('copy-view').textContent = 'Copy link'; }, 1500);
 });
 getCode(gameId).then((code) => {
     $('code').textContent = code || '??????';
     // The entry QR carries the code after '#' (never sent to the server), so
     // scanning it unlocks sub entry without typing. See gate.js.
     if (code && window.QRCode) {
-        new window.QRCode($('entry-qr'), { text: entryUrl + '#code=' + code, width: 144, height: 144 });
+        new window.QRCode($('entry-qr'), { text: entryUrl + '#code=' + code, width: 152, height: 152 });
     }
 });
 

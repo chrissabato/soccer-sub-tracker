@@ -16,31 +16,21 @@
   <section id="gate" class="card hidden"></section>
 
   <div id="app" class="hidden">
-    <section class="card">
-      <div class="grid-2">
-        <div>
-          <h2>Sub entry (phone)</h2>
-          <div class="row" style="align-items:flex-start">
-            <div id="entry-qr" class="qr" aria-label="QR code that opens sub entry on a phone"></div>
-            <div style="flex:1;min-width:180px">
-              <p class="muted">Scan with the sub-entry phone, or enter this game code:</p>
-              <div id="code" class="code">······</div>
-              <p class="share-link"><a id="entry-link" href="#"></a></p>
-              <p><a id="go-entry" class="button" href="#">Sub entry on this device</a></p>
-            </div>
-          </div>
+    <section class="card share">
+      <div class="share-panel">
+        <h2>Press box viewer</h2>
+        <p class="muted">Live, read-only view of pending and completed subs.</p>
+        <div class="share-actions">
+          <a id="open-view" class="button primary" href="#" target="_blank" rel="noopener">Open viewer</a>
+          <button id="copy-view" type="button">Copy link</button>
         </div>
+      </div>
+      <div class="share-panel share-entry">
+        <div id="entry-qr" class="qr" aria-label="QR code that opens sub entry on a phone"></div>
         <div>
-          <h2>Press box viewer</h2>
-          <div class="row" style="align-items:flex-start">
-            <div id="qr" class="qr" aria-label="QR code for the viewer link"></div>
-            <div style="flex:1;min-width:180px">
-              <p><a id="open-view" class="button primary" href="#" target="_blank" rel="noopener">Open viewer</a></p>
-              <p class="share-link"><a id="view-link" href="#" target="_blank" rel="noopener"></a></p>
-              <button id="copy-view" class="small" type="button">Copy viewer link</button>
-              <p class="muted">The viewer link doesn't include the game code.</p>
-            </div>
-          </div>
+          <h2>Sub entry phone</h2>
+          <p class="muted">Scan to open sub entry, or enter this code at <span id="site-host"></span>:</p>
+          <div id="code" class="code">······</div>
         </div>
       </div>
     </section>

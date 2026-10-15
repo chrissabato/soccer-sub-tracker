@@ -267,4 +267,23 @@ body.viewer main { max-width: 1280px; }
 
 .qr { background: #fff; padding: 8px; display: inline-block; border-radius: 8px; }
 .qr img, .qr canvas { display: block; }
-.share-link { font-size: 14px; overflow-wrap: anywhere; }
+
+/* Setup: viewer + phone panel */
+.share {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 0;
+}
+.share-panel { padding: 20px; }
+.share-panel h2 { margin-bottom: 4px; }
+.share-panel + .share-panel { border-left: 1px solid var(--border); }
+.share-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+.share-entry { display: flex; gap: 20px; align-items: center; }
+.share-entry > div { min-width: 0; }
+.share-entry .code { margin-top: 8px; }
+#site-host { overflow-wrap: anywhere; }
+@media (max-width: 700px) {
+    .share { grid-template-columns: 1fr; }
+    .share-panel + .share-panel { border-left: 0; border-top: 1px solid var(--border); }
+    .share-entry { flex-direction: column; align-items: flex-start; }
+}
