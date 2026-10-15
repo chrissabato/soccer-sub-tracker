@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sub Viewer</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%E2%9A%BD%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body class="viewer">
+<header class="bar">
+  <h1 id="title">Loading…</h1>
+  <span class="muted"><span id="status-dot" class="status-dot"></span><span id="status">Connecting</span></span>
+</header>
+<main>
+  <p id="error" class="error" role="alert"></p>
+
+  <section id="latest" class="latest hidden" aria-live="polite">
+    <h2 id="latest-title">Latest sub</h2>
+    <div id="latest-subs"></div>
+  </section>
+
+  <div class="grid-2">
+    <section class="card team-home">
+      <h2><span class="team-tag" id="home-name">Home</span> pending</h2>
+      <div id="pending-home"></div>
+      <p id="pending-home-empty" class="muted">None</p>
+    </section>
+    <section class="card team-away">
+      <h2><span class="team-tag" id="away-name">Away</span> pending</h2>
+      <div id="pending-away"></div>
+      <p id="pending-away-empty" class="muted">None</p>
+    </section>
+  </div>
+
+  <section class="card">
+    <h2>All subs</h2>
+    <table class="log">
+      <thead><tr><th>Min</th><th>Team</th><th>In</th><th>Out</th></tr></thead>
+      <tbody id="log"></tbody>
+    </table>
+    <p id="log-empty" class="muted">No subs yet.</p>
+  </section>
+</main>
+<script type="module" src="js/view.js"></script>
+</body>
+</html>

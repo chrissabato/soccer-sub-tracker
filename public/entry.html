@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sub Entry</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%E2%9A%BD%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body class="entry">
+<header class="bar">
+  <h1 id="title">Sub entry</h1>
+  <nav><a id="nav-setup" href="#">Setup</a><a id="nav-view" href="#" target="_blank" rel="noopener">Viewer</a></nav>
+</header>
+<main>
+  <section id="gate" class="card hidden"></section>
+
+  <div id="app" class="hidden">
+    <p><button id="add" class="primary big" type="button">+ Add sub</button></p>
+    <p id="error" class="error" role="alert"></p>
+
+    <section class="card">
+      <h2>Pending <span id="pending-count" class="muted"></span></h2>
+      <div id="pending"></div>
+      <p id="pending-empty" class="muted">No pending subs.</p>
+    </section>
+
+    <section class="card">
+      <h2>Completed</h2>
+      <div id="done"></div>
+      <p id="done-empty" class="muted">No subs yet.</p>
+    </section>
+  </div>
+</main>
+
+<div id="execute-bar" class="execute-bar hidden">
+  <button id="execute-all" class="primary big" type="button">Execute all</button>
+</div>
+
+<dialog id="sub-dialog">
+  <form method="dialog">
+    <h2 id="sub-title">Add sub</h2>
+    <div class="segmented" id="team-toggle">
+      <button type="button" class="team-home" data-team="home">Home</button>
+      <button type="button" class="team-away" data-team="away">Away</button>
+    </div>
+    <label>Player OUT</label>
+    <button type="button" class="pick" id="pick-out"></button>
+    <label>Player IN</label>
+    <button type="button" class="pick" id="pick-in"></button>
+    <div id="minute-row" class="hidden">
+      <label for="edit-minute">Minute</label>
+      <input id="edit-minute" inputmode="text" autocomplete="off" placeholder="67 or 45+2">
+    </div>
+    <p id="sub-error" class="error" role="alert"></p>
+    <div class="footer">
+      <button type="button" id="sub-cancel">Cancel</button>
+      <button type="button" class="primary" id="sub-save">Queue sub</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="picker">
+  <h2 id="picker-title">Choose player</h2>
+  <input id="picker-filter" placeholder="Type a number or name" autocomplete="off" inputmode="text">
+  <div id="picker-grid" class="player-grid"></div>
+  <div class="footer"><button type="button" id="picker-cancel">Cancel</button></div>
+</dialog>
+
+<dialog id="minute-dialog">
+  <h2 id="minute-title">Execute subs</h2>
+  <div id="minute-summary"></div>
+  <label for="minute">Match minute</label>
+  <div class="row">
+    <input id="minute" class="minute-input" inputmode="numeric" autocomplete="off" placeholder="67">
+    <button type="button" id="minute-plus" aria-label="Add stoppage time">+</button>
+  </div>
+  <p id="minute-error" class="error" role="alert"></p>
+  <div class="footer">
+    <button type="button" id="minute-cancel">Cancel</button>
+    <button type="button" class="primary" id="minute-ok">Execute</button>
+  </div>
+</dialog>
+
+<script type="module" src="js/entry.js"></script>
+</body>
+</html>

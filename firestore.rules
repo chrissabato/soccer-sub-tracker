@@ -1,0 +1,134 @@
+rules_version = '2';
+
+// Soccer Sub Tracker.
+//
+// - Everything about a game except its code is public-read (the press box
+//   viewer has no login).
+// - Writing requires an editors/{uid} doc, which can only be created by
+//   presenting the game's code (checked against secret/code, which clients
+//   can't read unless they are already editors).
+// - Anyone, even unauthenticated, may delete anything under a game more
+//   than 72 hours old, so bin/cleanup.php needs no credentials.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function gamePath(gid) {
+      return /databases/$(database)/documents/games/$(gid);
+    }
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isEditor(gid) {
+      return signedIn()
+        && exists(/databases/$(database)/documents/games/$(gid)/editors/$(request.auth.uid));
+    }
+
+    function expired(gid) {
+      return exists(gamePath(gid))
+        && get(gamePath(gid)).data.createdAt + duration.value(72, 'h') < request.time;
+    }
+
+    function validTeam(t) {
+      return t is map
+        && t.keys().hasOnly(['name', 'url'])
+        && t.name is string && t.name.size() <= 120
+        && t.url is string && t.url.size() <= 300;
+    }
+
+    function validPlayer(p) {
+      return p is map
+        && p.keys().hasOnly(['number', 'name'])
+        && p.number is string && p.number.size() <= 3
+        && p.name is string && p.name.size() <= 120;
+    }
+
+    function validSub(d) {
+      return d.keys().hasOnly(['team', 'playerIn', 'playerOut', 'status', 'minute', 'createdAt', 'executedAt', 'batchId'])
+        && d.team in ['home', 'away']
+        && d.status in ['pending', 'done']
+        && validPlayer(d.playerIn)
+        && validPlayer(d.playerOut)
+        && (d.minute == null || (d.minute is string && d.minute.matches('^[0-9]{1,3}([+][0-9]{1,2})?$')))
+        && (d.batchId == null || (d.batchId is string && d.batchId.size() <= 40));
+    }
+
+    match /codes/{code} {
+      allow get: if true;
+      // Created in the same batch as the game; must point at a game whose
+      // secret holds this exact code.
+      allow create: if signedIn()
+        && code.matches('^[A-HJ-NP-Z2-9]{6}$')
+        && request.resource.data.keys().hasOnly(['gameId'])
+        && getAfter(/databases/$(database)/documents/games/$(request.resource.data.gameId)/secret/code).data.code == code;
+      allow delete: if expired(resource.data.gameId);
+    }
+
+    match /games/{gid} {
+      allow read: if true;
+
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['home', 'away', 'division', 'createdAt', 'creatorUid'])
+        && request.resource.data.creatorUid == request.auth.uid
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.division in ['mens', 'womens']
+        && validTeam(request.resource.data.home)
+        && validTeam(request.resource.data.away)
+        && getAfter(/databases/$(database)/documents/games/$(gid)/secret/code) != null;
+
+      allow update: if isEditor(gid)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['home', 'away', 'division'])
+        && request.resource.data.division in ['mens', 'womens']
+        && validTeam(request.resource.data.home)
+        && validTeam(request.resource.data.away);
+
+      allow delete: if expired(gid);
+
+      match /secret/{docId} {
+        allow get: if isEditor(gid) || expired(gid);
+        // Only at game creation (the game doesn't exist yet, but will after
+        // this batch, owned by the caller), and the code must be claimed
+        // in codes/ by the same batch so codes stay unique.
+        allow create: if signedIn()
+          && docId == 'code'
+          && !exists(gamePath(gid))
+          && getAfter(gamePath(gid)).data.creatorUid == request.auth.uid
+          && request.resource.data.keys().hasOnly(['code'])
+          && request.resource.data.code.matches('^[A-HJ-NP-Z2-9]{6}$')
+          && getAfter(/databases/$(database)/documents/codes/$(request.resource.data.code)).data.gameId == gid;
+        allow delete: if expired(gid);
+      }
+
+      match /editors/{uid} {
+        allow get: if signedIn() && request.auth.uid == uid;
+        allow list: if expired(gid);
+        // Joining: present the game's code. getAfter() also covers the
+        // creator, whose editor doc is written in the creation batch.
+        allow create: if signedIn()
+          && request.auth.uid == uid
+          && request.resource.data.keys().hasOnly(['code'])
+          && request.resource.data.code == getAfter(/databases/$(database)/documents/games/$(gid)/secret/code).data.code;
+        allow delete: if expired(gid);
+      }
+
+      match /rosters/{side} {
+        allow read: if true;
+        allow create, update: if isEditor(gid)
+          && side in ['home', 'away']
+          && request.resource.data.keys().hasOnly(['players', 'sourceUrl', 'updatedAt'])
+          && request.resource.data.players is list
+          && request.resource.data.players.size() <= 80
+          && request.resource.data.sourceUrl is string
+          && request.resource.data.updatedAt == request.time;
+        allow delete: if isEditor(gid) || expired(gid);
+      }
+
+      match /subs/{subId} {
+        allow read: if true;
+        allow create, update: if isEditor(gid) && validSub(request.resource.data);
+        allow delete: if isEditor(gid) || expired(gid);
+      }
+    }
+  }
+}

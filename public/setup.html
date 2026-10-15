@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Game Setup</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%E2%9A%BD%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<header class="bar">
+  <h1 id="title">Game setup</h1>
+  <nav><a id="nav-entry" href="#">Sub entry</a><a id="nav-view" href="#" target="_blank" rel="noopener">Viewer</a><a href="./">Home</a></nav>
+</header>
+<main>
+  <section id="gate" class="card hidden"></section>
+
+  <div id="app" class="hidden">
+    <section class="card">
+      <div class="grid-2">
+        <div>
+          <h2>Game code</h2>
+          <div id="code" class="code">······</div>
+          <p class="muted">Enter this on the sub-entry phone, or open:</p>
+          <p class="share-link"><a id="entry-link" href="#"></a></p>
+          <p><a id="go-entry" class="button primary" href="#">Go to sub entry</a></p>
+        </div>
+        <div>
+          <h2>Press box viewer</h2>
+          <div class="row" style="align-items:flex-start">
+            <div id="qr" class="qr" aria-label="QR code for the viewer link"></div>
+            <div style="flex:1;min-width:180px">
+              <p class="share-link"><a id="view-link" href="#" target="_blank" rel="noopener"></a></p>
+              <button id="copy-view" class="small" type="button">Copy viewer link</button>
+              <p class="muted">The viewer link doesn't include the game code.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Game</h2>
+      <div class="grid-2">
+        <div>
+          <label for="division">Division</label>
+          <select id="division">
+            <option value="womens">Women's soccer</option>
+            <option value="mens">Men's soccer</option>
+          </select>
+        </div>
+        <div></div>
+        <div class="team-home">
+          <label for="home-name"><span class="team-tag">Home</span> team</label>
+          <input id="home-name" list="schools" autocomplete="off">
+        </div>
+        <div class="team-away">
+          <label for="away-name"><span class="team-tag">Away</span> team</label>
+          <input id="away-name" list="schools" autocomplete="off">
+        </div>
+      </div>
+      <datalist id="schools"></datalist>
+      <p id="game-status" class="muted" role="status"></p>
+    </section>
+
+    <div class="grid-2" id="rosters"></div>
+  </div>
+</main>
+
+<template id="roster-tpl">
+  <section class="card roster">
+    <h2><span class="team-tag side-tag"></span> <span class="team-name"></span> roster</h2>
+    <p class="saved muted"></p>
+    <label>Roster page URL</label>
+    <div class="row">
+      <input class="url" type="url" inputmode="url" placeholder="https://…/roster">
+      <button class="fetch" type="button">Find roster</button>
+    </div>
+    <p class="fetch-status muted" role="status"></p>
+    <details class="paste-box">
+      <summary>Or paste a list</summary>
+      <label>One player per line, e.g. <code>10 Jane Smith</code> or <code>10, Jane Smith, GK</code></label>
+      <textarea class="paste" spellcheck="false"></textarea>
+      <button class="use-paste" type="button">Use this list</button>
+    </details>
+    <div class="review hidden">
+      <table>
+        <thead><tr><th>#</th><th>Name</th><th>Pos</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <div class="row" style="margin-top:10px">
+        <button class="add-row small" type="button">Add player</button>
+        <span style="flex:1"></span>
+        <button class="discard small" type="button">Discard changes</button>
+        <button class="save primary" type="button">Save roster</button>
+      </div>
+    </div>
+  </section>
+</template>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="js/scraper-core.js"></script>
+<script type="module" src="js/setup.js"></script>
+</body>
+</html>
