@@ -9,7 +9,21 @@ const gameId = new URLSearchParams(location.search).get('g') || '';
 let game = null;
 let subs = [];
 let subsLoaded = false;
-let shownBatch; // batch on screen; unset until the first subs snapshot so loading doesn't flash
+let shownBatch; // batch on screen; unset until the first subs snapshot
+let litTimer = null;
+const HIGHLIGHT_MS = 20000;
+
+// Neon highlight on the latest-sub box for `ms`, then it fades (CSS).
+function highlightLatest(ms) {
+    const box = $('latest');
+    box.classList.add('lit', 'pulse');
+    clearTimeout(litTimer);
+    litTimer = setTimeout(() => {
+        // Stop the pulse first so the fade starts from the steady glow.
+        box.classList.remove('pulse');
+        requestAnimationFrame(() => requestAnimationFrame(() => box.classList.remove('lit')));
+    }, ms);
+}
 
 function showError(err) {
     $('error').textContent = 'Live updates stopped: ' + (err.message || err) + '. Reload the page.';
@@ -77,11 +91,17 @@ function render() {
     if (!subsLoaded) {
         return;
     }
-    if (shownBatch !== undefined && latestBatch && latestBatch !== shownBatch) {
-        const box = $('latest');
-        box.classList.remove('flash');
-        void box.offsetWidth; // restart the animation
-        box.classList.add('flash');
+    if (latestBatch && latestBatch !== shownBatch) {
+        if (shownBatch !== undefined) {
+            highlightLatest(HIGHLIGHT_MS);
+        } else if (latest[0].executedAt) {
+            // Page opened just after a sub: highlight for what's left of
+            // the 20 s.
+            const left = HIGHLIGHT_MS - (Date.now() - latest[0].executedAt.toMillis());
+            if (left > 0) {
+                highlightLatest(left);
+            }
+        }
     }
     shownBatch = latestBatch;
 }

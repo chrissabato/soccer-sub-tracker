@@ -16,8 +16,9 @@
     --io-in-text: #ffffff;
     --io-out: #b42318;
     --io-out-text: #ffffff;
-    --highlight: #fff4c2;
-    --highlight-border: #e3b400;
+    --neon: #39ff14;
+    --neon-glow: rgba(57, 255, 20, .55);
+    --neon-tint: #effde9;
     --radius: 10px;
     --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     color-scheme: light;
@@ -42,8 +43,9 @@
         --io-in-text: #06140f;
         --io-out: #ff6b5e;
         --io-out-text: #1a0503;
-        --highlight: #3a3212;
-        --highlight-border: #d4a514;
+        --neon: #39ff14;
+        --neon-glow: rgba(57, 255, 20, .5);
+        --neon-tint: #12240d;
         color-scheme: dark;
     }
 }
@@ -299,22 +301,30 @@ dialog .footer { display: flex; gap: 8px; justify-content: flex-end; margin-top:
 /* Viewer */
 body.viewer main { max-width: 1280px; }
 .latest {
-    border: 2px solid var(--highlight-border);
-    background: var(--highlight);
+    border: 2px solid var(--border);
+    background: var(--surface);
     border-radius: var(--radius);
     padding: 16px 20px;
     margin-bottom: 20px;
+    /* Fade back to a plain card when .lit is removed. */
+    transition: border-color 2s ease, box-shadow 2s ease, background-color 2s ease;
+}
+/* Neon highlight for 20 s after a new sub (see view.js). */
+.latest.lit {
+    border-color: var(--neon);
+    background: var(--neon-tint);
+    box-shadow: 0 0 6px 2px var(--neon-glow), 0 0 28px 6px var(--neon-glow);
+}
+.latest.lit.pulse { animation: neon-pulse 1.6s ease-in-out infinite alternate; }
+@keyframes neon-pulse {
+    from { box-shadow: 0 0 6px 2px var(--neon-glow), 0 0 22px 4px var(--neon-glow); }
+    to { box-shadow: 0 0 10px 3px var(--neon-glow), 0 0 40px 10px var(--neon-glow); }
 }
 .latest h2 { font-size: 15px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
 .latest .sub { background: transparent; font-size: 22px; padding: 6px 12px; }
 .latest .sub .in::before, .latest .sub .out::before { font-size: 15px; }
-.latest.flash { animation: flash 1.2s ease-out 3; }
-@keyframes flash {
-    0% { box-shadow: 0 0 0 0 var(--highlight-border); }
-    100% { box-shadow: 0 0 0 14px transparent; }
-}
 @media (prefers-reduced-motion: reduce) {
-    .latest.flash { animation: none; }
+    .latest.lit.pulse { animation: none; }
 }
 .viewer .sub { font-size: 18px; }
 .status-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--muted); margin-right: 6px; }
