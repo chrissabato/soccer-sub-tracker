@@ -27,16 +27,30 @@ export function normalizeCode(input) {
 }
 
 // Match clock time as typed by the official, minutes and seconds:
-// "67:23", " 67 : 23 ", or digits only ("6723" -> 67:23, the last two
-// digits are always the seconds; phone number pads have no colon).
+// "67:23", " 67 : 23 ", ":12" (0:12), or digits only ("6723" -> 67:23, the
+// last two digits are always the seconds; phone number pads have no colon).
 // Returns the canonical "67:23" or null if it isn't a valid MM:SS.
 export function normalizeMinute(input) {
     const s = String(input || '').replace(/\s/g, '');
-    const m = s.match(/^(\d{1,3}):(\d{2})$/) || s.match(/^(\d{1,3})(\d{2})$/);
+    const m = s.match(/^(\d{0,3}):(\d{2})$/) || s.match(/^(\d{1,3})(\d{2})$/);
     if (!m || parseInt(m[2], 10) > 59) {
         return null;
     }
-    return parseInt(m[1], 10) + ':' + m[2];
+    return parseInt(m[1] || '0', 10) + ':' + m[2];
+}
+
+// Live display while typing digits into a clock-time box: the last two
+// digits are seconds. "1" -> ":01", "12" -> ":12", "123" -> "1:23",
+// "6723" -> "67:23". At most 5 digits (999:59).
+export function formatClockDigits(digits) {
+    const d = String(digits || '').replace(/\D/g, '').slice(0, 5);
+    if (!d) {
+        return '';
+    }
+    if (d.length <= 2) {
+        return ':' + d.padStart(2, '0');
+    }
+    return parseInt(d.slice(0, -2), 10) + ':' + d.slice(-2);
 }
 
 // Seconds into the match for a "67:23" time, for sorting; -1 if unknown.

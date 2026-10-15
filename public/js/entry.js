@@ -1,6 +1,6 @@
 import { requireEditor } from './gate.js';
 import { watchGame, watchRosters, watchSubs, addSub, editSub, cancelSub, executeSubs } from './store.js';
-import { normalizeMinute, playerLabel, byNumber, escapeHtml } from './lib.js';
+import { normalizeMinute, formatClockDigits, playerLabel, byNumber, escapeHtml } from './lib.js';
 import { applyTeamColors, subCard, teamName, doneNewestFirst } from './render.js';
 
 const $ = (id) => document.getElementById(id);
@@ -105,7 +105,7 @@ function openSubDialog(sub, side = 'home') {
     $('sub-save').textContent = sub ? 'Save' : 'Queue sub';
     const isDone = sub && sub.status === 'done';
     $('minute-row').classList.toggle('hidden', !isDone);
-    $('edit-minute').value = isDone ? (sub.minute || '') : '';
+    setClock($('edit-minute'), isDone ? (sub.minute || '') : '');
     $('sub-error').textContent = '';
     renderSubForm();
     $('sub-dialog').showModal();
@@ -246,6 +246,53 @@ $('picker-grid').addEventListener('click', (e) => {
     }
 });
 
+// --- clock-time boxes: the colon goes in by itself as digits are typed ---
+
+// The digits typed so far live in data-digits; the box shows them
+// formatted. Tracking digits (not re-reading the box) is what lets
+// backspace remove the padding zero in ":01".
+function setClock(input, value) {
+    input.dataset.digits = String(value || '').replace(/\D/g, '');
+    input.value = value || '';
+}
+
+function attachClock(input) {
+    input.addEventListener('input', (e) => {
+        let digits = input.dataset.digits || '';
+        const before = formatClockDigits(digits);
+        if (e.inputType === 'insertText' && e.data && input.value === before + e.data) {
+            // Typed at the end.
+            digits += e.data.replace(/\D/g, '');
+        } else if (e.inputType === 'deleteContentBackward' && input.value === before.slice(0, -1)) {
+            // Backspace at the end: drop the last digit, not just the
+            // character (so ":01" clears instead of re-padding to ":00").
+            digits = digits.slice(0, -1);
+        } else {
+            // Anything else (select-all and type, paste, autofill): take
+            // the digits that are now in the box.
+            digits = input.value.replace(/\D/g, '');
+        }
+        input.dataset.digits = digits.slice(0, 5);
+        input.value = formatClockDigits(input.dataset.digits);
+        caretToEnd(input);
+    });
+    // Digits are always added/removed at the end, so keep the caret there
+    // (a prefilled box would otherwise focus with the caret at the start,
+    // where Backspace does nothing). A selection is left alone so
+    // select-all-and-type still replaces the value.
+    ['focus', 'click'].forEach((type) => input.addEventListener(type, () => setTimeout(() => {
+        if (input.selectionStart === input.selectionEnd) {
+            caretToEnd(input);
+        }
+    }, 0)));
+}
+
+function caretToEnd(input) {
+    input.setSelectionRange(input.value.length, input.value.length);
+}
+attachClock($('minute'));
+attachClock($('edit-minute'));
+
 // --- execute with minute ---
 
 let executing = [];
@@ -257,7 +304,7 @@ function openMinuteDialog(list) {
     $('minute-summary').innerHTML = list.map((s) => subCard(s, game)).join('');
     // Blank, not prefilled: a stale minute accepted by habit is worse than
     // typing two digits.
-    $('minute').value = '';
+    setClock($('minute'), '');
     $('minute').placeholder = lastMinute ? 'last: ' + lastMinute : '67:23';
     $('minute-error').textContent = '';
     $('minute-dialog').showModal();
@@ -269,13 +316,6 @@ $('execute-all').addEventListener('click', () => {
     if (pending.length) {
         openMinuteDialog(pending);
     }
-});
-$('minute-colon').addEventListener('click', () => {
-    const v = $('minute').value.trim();
-    if (v && !v.includes(':')) {
-        $('minute').value = v + ':';
-    }
-    $('minute').focus();
 });
 $('minute-cancel').addEventListener('click', () => $('minute-dialog').close());
 $('minute').addEventListener('keydown', (e) => {

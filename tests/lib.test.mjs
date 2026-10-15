@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-    generateCode, normalizeCode, CODE_PATTERN, normalizeMinute, minuteSortValue,
+    generateCode, normalizeCode, CODE_PATTERN, normalizeMinute, formatClockDigits, minuteSortValue,
     season, guessRosterUrls, parsePasteList, byNumber, normalizeColor, contrastText,
 } from '../public/js/lib.js';
 
@@ -27,6 +27,7 @@ test('normalizeMinute takes MM:SS, with or without the colon', () => {
     assert.equal(normalizeMinute('07:05'), '7:05');
     assert.equal(normalizeMinute('9215'), '92:15');
     assert.equal(normalizeMinute('100:00'), '100:00');
+    assert.equal(normalizeMinute(':12'), '0:12');
     assert.equal(normalizeMinute('67'), null); // seconds required
     assert.equal(normalizeMinute('67:6'), null);
     assert.equal(normalizeMinute('67:60'), null);
@@ -34,6 +35,21 @@ test('normalizeMinute takes MM:SS, with or without the colon', () => {
     assert.equal(normalizeMinute(''), null);
     assert.equal(normalizeMinute('abc'), null);
     assert.equal(normalizeMinute('1000:00'), null);
+});
+
+test('formatClockDigits places the colon before the last two digits', () => {
+    assert.equal(formatClockDigits(''), '');
+    assert.equal(formatClockDigits('1'), ':01');
+    assert.equal(formatClockDigits('12'), ':12');
+    assert.equal(formatClockDigits('123'), '1:23');
+    assert.equal(formatClockDigits('6723'), '67:23');
+    assert.equal(formatClockDigits('10000'), '100:00');
+    assert.equal(formatClockDigits('123456'), '123:45'); // capped at 5 digits
+    assert.equal(formatClockDigits('0123'), '1:23');
+    // what the box shows is always accepted on Execute (when seconds <= 59)
+    for (const d of ['1', '12', '123', '6723', '9215']) {
+        assert.ok(normalizeMinute(formatClockDigits(d)), d);
+    }
 });
 
 test('minuteSortValue orders by clock time', () => {
