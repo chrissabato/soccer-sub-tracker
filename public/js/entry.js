@@ -110,7 +110,7 @@ function openSubDialog(sub, side = 'home') {
     renderSubForm();
     $('sub-dialog').showModal();
     if (!sub) {
-        pickPlayer('playerOut');
+        pickPlayer('playerIn');
     }
 }
 
@@ -168,7 +168,18 @@ let pickingField = null;
 
 function pickPlayer(field) {
     pickingField = field;
-    $('picker-title').textContent = (field === 'playerOut' ? 'Player OUT' : 'Player IN') + ': ' + teamName(game, form.team);
+    const isIn = field === 'playerIn';
+    $('picker').classList.toggle('picking-in', isIn);
+    $('picker').classList.toggle('picking-out', !isIn);
+    $('picker-title').innerHTML = `<span class="io-badge">${isIn ? 'IN' : 'OUT'}</span>
+        <span class="team-tag team-${form.team}">${escapeHtml(teamName(game, form.team))}</span>`;
+    // Show the player already chosen for the other side of the swap.
+    const other = form[isIn ? 'playerOut' : 'playerIn'];
+    const hasOther = other && (other.number || other.name);
+    $('picker-context').classList.toggle('hidden', !hasOther);
+    $('picker-context').innerHTML = hasOther
+        ? `<span class="io-badge io-${isIn ? 'out' : 'in'}">${isIn ? 'OUT' : 'IN'}</span> ${escapeHtml(playerLabel(other))}`
+        : '';
     $('picker-filter').value = '';
     renderPicker();
     $('picker').showModal();
@@ -219,7 +230,7 @@ $('picker-grid').addEventListener('click', (e) => {
         return;
     }
     form[pickingField] = { number: b.dataset.number, name: b.dataset.name };
-    const next = pickingField === 'playerOut' && !form.playerIn ? 'playerIn' : null;
+    const next = pickingField === 'playerIn' && !form.playerOut ? 'playerOut' : null;
     $('picker').close();
     renderSubForm();
     if (next) {

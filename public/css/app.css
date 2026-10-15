@@ -12,6 +12,10 @@
     --away: #b45309;
     --away-text: #ffffff;
     --danger: #b42318;
+    --io-in: #0b6e4f;
+    --io-in-text: #ffffff;
+    --io-out: #b42318;
+    --io-out-text: #ffffff;
     --highlight: #fff4c2;
     --highlight-border: #e3b400;
     --radius: 10px;
@@ -34,6 +38,10 @@
         --away: #f2a33a;
         --away-text: #000000;
         --danger: #ff6b5e;
+        --io-in: #2fb985;
+        --io-in-text: #06140f;
+        --io-out: #ff6b5e;
+        --io-out-text: #1a0503;
         --highlight: #3a3212;
         --highlight-border: #d4a514;
         color-scheme: dark;
@@ -231,6 +239,40 @@ dialog::backdrop { background: rgba(0, 0, 0, .5); }
 dialog h2 { margin-bottom: 8px; }
 dialog h2:focus { outline: none; }
 dialog .footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+/* IN / OUT emphasis in the sub dialog and player picker */
+.io-in { --io: var(--io-in); --io-text: var(--io-in-text); }
+.io-out { --io: var(--io-out); --io-text: var(--io-out-text); }
+.io-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 3.4em;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-weight: 800;
+    font-size: 15px;
+    letter-spacing: .06em;
+    background: var(--io);
+    color: var(--io-text);
+}
+.io-row { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+.io-row .pick { flex: 1; min-width: 0; border-left: 5px solid var(--io); }
+#picker.picking-in { --io: var(--io-in); --io-text: var(--io-in-text); border-top: 6px solid var(--io); }
+#picker.picking-out { --io: var(--io-out); --io-text: var(--io-out-text); border-top: 6px solid var(--io); }
+.picker-title { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 20px; }
+.picker-title .team-tag { font-size: 14px; }
+.picker-context {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 10px;
+    padding: 8px 10px;
+    background: var(--surface-2);
+    border-radius: 8px;
+    font-weight: 600;
+}
+.picker-context .io-badge { font-size: 12px; min-width: 0; padding: 2px 8px; }
+
 .pick { width: 100%; justify-content: flex-start; text-align: left; min-height: 52px; font-weight: 500; }
 .pick .placeholder { color: var(--muted); }
 
