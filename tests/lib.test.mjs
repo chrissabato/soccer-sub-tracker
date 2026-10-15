@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
     generateCode, normalizeCode, CODE_PATTERN, normalizeMinute, minuteSortValue,
-    season, guessRosterUrls, parsePasteList, byNumber,
+    season, guessRosterUrls, parsePasteList, byNumber, normalizeColor, contrastText,
 } from '../public/js/lib.js';
 
 test('generated codes match the pattern the rules enforce', () => {
@@ -81,4 +81,21 @@ test('parsePasteList does not take a mixed-case surname as a position', () => {
 test('byNumber sorts numerically with unnumbered last', () => {
     const list = [{ number: '', name: 'Z' }, { number: '10', name: 'A' }, { number: '2', name: 'B' }];
     assert.deepEqual(list.sort(byNumber).map((p) => p.number), ['2', '10', '']);
+});
+
+test('normalizeColor', () => {
+    assert.equal(normalizeColor('#1D4ED8'), '#1d4ed8');
+    assert.equal(normalizeColor(' #abcdef '), '#abcdef');
+    assert.equal(normalizeColor('#abc'), '');
+    assert.equal(normalizeColor('red'), '');
+    assert.equal(normalizeColor(undefined), '');
+});
+
+test('contrastText picks readable badge text', () => {
+    assert.equal(contrastText('#000000'), '#ffffff');
+    assert.equal(contrastText('#ffffff'), '#000000');
+    assert.equal(contrastText('#1d4ed8'), '#ffffff'); // royal blue
+    assert.equal(contrastText('#ffd700'), '#000000'); // gold
+    assert.equal(contrastText('#8b0000'), '#ffffff'); // dark red
+    assert.equal(contrastText('#00ff00'), '#000000'); // bright green
 });

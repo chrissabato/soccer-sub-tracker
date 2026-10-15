@@ -127,6 +127,16 @@ test('only editors write subs, rosters and game fields', async () => {
     await assertSucceeds(deleteDoc(doc(editor, 'games', 'g1', 'subs', 'x')));
 });
 
+test('team colors must be #rrggbb and are optional', async () => {
+    await seed();
+    const editor = as('creator');
+    await assertSucceeds(updateDoc(doc(editor, 'games', 'g1'), { home: { name: 'H', url: '', color: '#ffd700' } }));
+    await assertSucceeds(updateDoc(doc(editor, 'games', 'g1'), { home: { name: 'H', url: '' } }));
+    await assertFails(updateDoc(doc(editor, 'games', 'g1'), { home: { name: 'H', url: '', color: 'red' } }));
+    await assertFails(updateDoc(doc(editor, 'games', 'g1'), { home: { name: 'H', url: '', color: '#FFD700' } }));
+    await assertFails(updateDoc(doc(editor, 'games', 'g1'), { home: { name: 'H', url: '', color: '#ffd700', logo: 'x' } }));
+});
+
 test('sub shape is validated', async () => {
     await seed();
     const editor = as('creator');

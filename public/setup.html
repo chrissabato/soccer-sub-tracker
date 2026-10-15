@@ -52,11 +52,17 @@
         <div></div>
         <div class="team-home">
           <label for="home-name"><span class="team-tag">Home</span> team</label>
-          <input id="home-name" list="schools" autocomplete="off">
+          <div class="team-field">
+            <input id="home-name" list="schools" autocomplete="off">
+            <input id="home-color" type="color" aria-label="Home team color" title="Home team color">
+          </div>
         </div>
         <div class="team-away">
           <label for="away-name"><span class="team-tag">Away</span> team</label>
-          <input id="away-name" list="schools" autocomplete="off">
+          <div class="team-field">
+            <input id="away-name" list="schools" autocomplete="off">
+            <input id="away-color" type="color" aria-label="Away team color" title="Away team color">
+          </div>
         </div>
       </div>
       <datalist id="schools"></datalist>

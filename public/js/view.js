@@ -1,7 +1,7 @@
 // Press box viewer: read-only, no login, updates live.
 import { watchGame, watchSubs } from './store.js';
 import { escapeHtml, playerLabel } from './lib.js';
-import { subCard, teamName, divisionLabel, doneNewestFirst } from './render.js';
+import { applyTeamColors, subCard, teamName, divisionLabel, doneNewestFirst } from './render.js';
 
 const $ = (id) => document.getElementById(id);
 const gameId = new URLSearchParams(location.search).get('g') || '';
@@ -27,6 +27,7 @@ if (!gameId) {
             return;
         }
         game = g;
+        applyTeamColors(g);
         const title = teamName(g, 'home') + ' vs ' + teamName(g, 'away');
         $('title').textContent = title + ' · ' + divisionLabel(g.division);
         document.title = 'Subs: ' + title;

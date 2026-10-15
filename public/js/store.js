@@ -5,7 +5,7 @@ import {
     writeBatch, serverTimestamp, query, orderBy,
 } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 import { db, currentUser } from './firebase.js';
-import { generateCode, normalizeCode } from './lib.js';
+import { generateCode, normalizeCode, normalizeColor } from './lib.js';
 
 const gameRef = (gid) => doc(db, 'games', gid);
 const secretRef = (gid) => doc(db, 'games', gid, 'secret', 'code');
@@ -14,8 +14,12 @@ const rosterRef = (gid, side) => doc(db, 'games', gid, 'rosters', side);
 const subsCol = (gid) => collection(db, 'games', gid, 'subs');
 const codeRef = (code) => doc(db, 'codes', code);
 
-export function team(name = '', url = '') {
-    return { name: String(name).trim().slice(0, 120), url: String(url).trim().slice(0, 300) };
+export function team(name = '', url = '', color = '') {
+    const t = { name: String(name).trim().slice(0, 120), url: String(url).trim().slice(0, 300) };
+    if (normalizeColor(color)) {
+        t.color = normalizeColor(color);
+    }
+    return t;
 }
 
 // Creates a game in one batch (game, its secret code, the code lookup and

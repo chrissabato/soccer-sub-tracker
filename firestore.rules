@@ -32,9 +32,10 @@ service cloud.firestore {
 
     function validTeam(t) {
       return t is map
-        && t.keys().hasOnly(['name', 'url'])
+        && t.keys().hasOnly(['name', 'url', 'color'])
         && t.name is string && t.name.size() <= 120
-        && t.url is string && t.url.size() <= 300;
+        && t.url is string && t.url.size() <= 300
+        && (!('color' in t) || (t.color is string && t.color.matches('^#[0-9a-f]{6}$')));
     }
 
     function validPlayer(p) {

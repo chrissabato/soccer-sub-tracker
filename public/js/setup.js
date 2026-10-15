@@ -1,5 +1,6 @@
 import { requireEditor } from './gate.js';
 import { getCode, updateGame, saveRoster, watchGame, watchRosters, team } from './store.js';
+import { applyTeamColors } from './render.js';
 import { loadSchools, fillDatalist, findSchool } from './schools.js';
 import { fetchFirstRoster } from './roster-import.js';
 import { guessRosterUrls, parsePasteList, byNumber, escapeHtml } from './lib.js';
@@ -54,12 +55,16 @@ watchGame(gameId, (g) => {
     game = g;
     $('title').textContent = (g.home.name || 'Home') + ' vs ' + (g.away.name || 'Away');
     document.title = 'Setup: ' + $('title').textContent;
+    applyTeamColors(g);
     if (document.activeElement !== $('division')) {
         $('division').value = g.division;
     }
     SIDES.forEach((side) => {
         if (document.activeElement !== $(side + '-name')) {
             $(side + '-name').value = g[side].name;
+        }
+        if (document.activeElement !== $(side + '-color')) {
+            $(side + '-color').value = g[side].color || themeColor(side);
         }
         editors[side].setTeam(g[side], g.division);
     });
@@ -87,9 +92,28 @@ SIDES.forEach((side) => {
         const school = findSchool(schools, e.target.value);
         // Keep the known site URL if the name was only retyped.
         const url = school ? school.url : '';
-        saveGame({ [side]: team(school ? school.name : e.target.value, url) });
+        saveGame({ [side]: team(school ? school.name : e.target.value, url, game[side].color) });
+    });
+    // Preview while dragging the picker; save once a color is chosen.
+    $(side + '-color').addEventListener('input', (e) => {
+        applyTeamColors({ ...game, [side]: { ...game[side], color: e.target.value } });
+    });
+    $(side + '-color').addEventListener('change', (e) => {
+        const t = game[side];
+        saveGame({ [side]: team(t.name, t.url, e.target.value) });
     });
 });
+
+// The theme's default color for a side, for teams with no color set yet.
+function themeColor(side) {
+    const probe = document.createElement('span');
+    probe.className = 'team-' + side;
+    probe.style.color = 'var(--team)';
+    document.body.appendChild(probe);
+    const rgb = getComputedStyle(probe).color.match(/\d+/g) || [0, 0, 0];
+    probe.remove();
+    return '#' + rgb.slice(0, 3).map((n) => (+n).toString(16).padStart(2, '0')).join('');
+}
 
 // --- per-team roster import/review ---
 

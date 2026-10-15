@@ -8,7 +8,9 @@
     --accent: #0b6e4f;
     --accent-text: #ffffff;
     --home: #1d4ed8;
+    --home-text: #ffffff;
     --away: #b45309;
+    --away-text: #ffffff;
     --danger: #b42318;
     --highlight: #fff4c2;
     --highlight-border: #e3b400;
@@ -28,7 +30,9 @@
         --accent: #2fb985;
         --accent-text: #06140f;
         --home: #6b9bff;
+        --home-text: #000000;
         --away: #f2a33a;
+        --away-text: #000000;
         --danger: #ff6b5e;
         --highlight: #3a3212;
         --highlight-border: #d4a514;
@@ -129,21 +133,33 @@ button.big { width: 100%; min-height: 56px; font-size: 18px; }
     letter-spacing: .15em;
 }
 
-.team-home { --team: var(--home); }
-.team-away { --team: var(--away); }
+.team-home { --team: var(--home); --team-text: var(--home-text); }
+.team-away { --team: var(--away); --team-text: var(--away-text); }
 .team-tag {
     display: inline-block;
     font-size: 12px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: .04em;
-    color: var(--team);
+    color: var(--team-text);
+    background: var(--team);
+    padding: 1px 6px;
+    border-radius: 4px;
 }
 
 /* Segmented control (home/away) */
 .segmented { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
 .segmented button { border: 0; border-radius: 0; background: var(--surface); min-height: 48px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.segmented button[aria-pressed="true"] { background: var(--team); color: #fff; }
+.segmented button[aria-pressed="true"] { background: var(--team); color: var(--team-text); }
+
+.team-field { display: flex; gap: 8px; align-items: center; }
+.team-field input[type="color"] {
+    flex: 0 0 52px;
+    width: 52px;
+    height: 44px;
+    padding: 3px;
+    cursor: pointer;
+}
 
 /* Roster review table */
 table { width: 100%; border-collapse: collapse; }

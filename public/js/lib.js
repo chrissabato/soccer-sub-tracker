@@ -141,6 +141,28 @@ export function byNumber(a, b) {
     return na - nb || String(a.name).localeCompare(String(b.name));
 }
 
+// "#1D4ED8" / "#1d4ed8" -> "#1d4ed8"; anything else -> ''.
+export function normalizeColor(c) {
+    const s = String(c || '').trim().toLowerCase();
+    return /^#[0-9a-f]{6}$/.test(s) ? s : '';
+}
+
+// Black or white, whichever reads better on a #rrggbb background
+// (WCAG relative luminance).
+export function contrastText(hex) {
+    const c = normalizeColor(hex);
+    if (!c) {
+        return '#ffffff';
+    }
+    const lin = (i) => {
+        const v = parseInt(c.slice(i, i + 2), 16) / 255;
+        return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+    };
+    const l = 0.2126 * lin(1) + 0.7152 * lin(3) + 0.0722 * lin(5);
+    // Contrast with white is 1.05/(l+.05); with black (l+.05)/.05.
+    return 1.05 / (l + 0.05) >= (l + 0.05) / 0.05 ? '#ffffff' : '#000000';
+}
+
 export function escapeHtml(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({
         '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',

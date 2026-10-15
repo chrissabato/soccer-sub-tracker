@@ -1,5 +1,21 @@
 // Markup shared by the entry page and the viewer.
-import { escapeHtml, playerLabel } from './lib.js';
+import { escapeHtml, playerLabel, normalizeColor, contrastText } from './lib.js';
+
+// Overrides --home/--away (and their badge text colors) with the game's
+// team colors. Teams without a color keep the theme defaults.
+export function applyTeamColors(game) {
+    const style = document.documentElement.style;
+    ['home', 'away'].forEach((side) => {
+        const color = normalizeColor(game && game[side] && game[side].color);
+        if (color) {
+            style.setProperty('--' + side, color);
+            style.setProperty('--' + side + '-text', contrastText(color));
+        } else {
+            style.removeProperty('--' + side);
+            style.removeProperty('--' + side + '-text');
+        }
+    });
+}
 
 export function teamName(game, side) {
     const name = game && game[side] && game[side].name;
