@@ -70,12 +70,11 @@ export function guessRosterUrls(siteUrl, division, date = new Date()) {
 
 // Plain pasted roster, one player per line:
 //   10 Jane Smith
-//   #10 Jane Smith GK
-//   10, Jane Smith, D
-//   10<TAB>Jane Smith<TAB>MF
-// Blank lines and lines with no letters are skipped.
-const POSITION = /^(GK|G|D|DF|DEF|M|MF|MID|F|FW|FWD|W|B|CB|FB|LB|RB|CM|DM|AM|ST|[GDMFWB](\/[GDMFWB]){1,2})$/;
-
+//   #10 Jane Smith
+//   10, Jane Smith
+//   10<TAB>Jane Smith
+// With commas or tabs, columns after the name (e.g. class year) are
+// ignored. Blank lines and lines with no letters are skipped.
 export function parsePasteList(text) {
     const players = [];
     String(text || '').split(/\r?\n/).forEach((raw) => {
@@ -83,43 +82,24 @@ export function parsePasteList(text) {
         if (!/[A-Za-z]/.test(line)) {
             return;
         }
-        let fields;
-        if (/[\t,]/.test(line)) {
-            fields = line.split(/\s*[\t,]\s*/).filter(Boolean);
-        } else {
-            fields = null;
-        }
-
         let number = '';
         let name;
-        let position = '';
-        if (fields) {
+        if (/[\t,]/.test(line)) {
+            const fields = line.split(/\s*[\t,]\s*/).filter(Boolean);
             if (/^#?\d{1,3}$/.test(fields[0])) {
                 number = fields.shift().replace('#', '');
             }
             name = fields.shift() || '';
-            if (fields.length && POSITION.test(fields[0].toUpperCase())) {
-                position = fields[0].toUpperCase();
-            }
         } else {
             const m = line.match(/^#?(\d{1,3})\.?\s+(.*)$/);
-            let rest = line;
             if (m) {
                 number = m[1];
-                rest = m[2];
             }
-            const words = rest.split(/\s+/);
-            // A trailing position is only taken when typed in capitals, so a
-            // short surname like "Bo" or "Md" isn't mistaken for one.
-            const last = words[words.length - 1];
-            if (words.length > 1 && last === last.toUpperCase() && POSITION.test(last)) {
-                position = words.pop();
-            }
-            name = words.join(' ');
+            name = m ? m[2] : line;
         }
         name = name.replace(/\s+/g, ' ').trim();
         if (name) {
-            players.push({ number, name, position });
+            players.push({ number, name });
         }
     });
     return players;

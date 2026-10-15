@@ -120,7 +120,7 @@ test('only editors write subs, rosters and game fields', async () => {
         status: 'done', minute: '45+2', executedAt: serverTimestamp(), batchId: 'b1',
     }));
     await assertSucceeds(setDoc(doc(editor, 'games', 'g1', 'rosters', 'away'), {
-        players: [{ number: '1', name: 'X', position: 'GK' }], sourceUrl: '', updatedAt: serverTimestamp(),
+        players: [{ number: '1', name: 'X' }], sourceUrl: '', updatedAt: serverTimestamp(),
     }));
     await assertSucceeds(updateDoc(doc(editor, 'games', 'g1'), { division: 'womens', home: team('New') }));
     await assertFails(updateDoc(doc(editor, 'games', 'g1'), { creatorUid: 'creator2' }));

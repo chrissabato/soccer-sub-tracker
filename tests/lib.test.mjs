@@ -55,9 +55,9 @@ test('guessRosterUrls', () => {
 test('parsePasteList handles common formats', () => {
     const players = parsePasteList([
         '10 Jane Smith',
-        '#4 Ana María López GK',
-        '7, Kim Lee, D',
-        '22\tBo Md\tMF',
+        '#4 Ana María López',
+        '7, Kim Lee, Junior',
+        '22\tBo Md\tSophomore',
         '9. Sam Bo',
         'Coach Without Number',
         '',
@@ -65,17 +65,13 @@ test('parsePasteList handles common formats', () => {
         '  ',
     ].join('\n'));
     assert.deepEqual(players, [
-        { number: '10', name: 'Jane Smith', position: '' },
-        { number: '4', name: 'Ana María López', position: 'GK' },
-        { number: '7', name: 'Kim Lee', position: 'D' },
-        { number: '22', name: 'Bo Md', position: 'MF' },
-        { number: '9', name: 'Sam Bo', position: '' },
-        { number: '', name: 'Coach Without Number', position: '' },
+        { number: '10', name: 'Jane Smith' },
+        { number: '4', name: 'Ana María López' },
+        { number: '7', name: 'Kim Lee' },
+        { number: '22', name: 'Bo Md' },
+        { number: '9', name: 'Sam Bo' },
+        { number: '', name: 'Coach Without Number' },
     ]);
-});
-
-test('parsePasteList does not take a mixed-case surname as a position', () => {
-    assert.deepEqual(parsePasteList('3 Lee Md'), [{ number: '3', name: 'Lee Md', position: '' }]);
 });
 
 test('byNumber sorts numerically with unnumbered last', () => {

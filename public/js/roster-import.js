@@ -12,7 +12,7 @@ export class RosterFetchError extends Error {
     }
 }
 
-// Returns { players: [{number, name, position}], url }.
+// Returns { players: [{number, name}], url }.
 export async function fetchRoster(url) {
     let res;
     try {
@@ -38,7 +38,6 @@ export function parseRosterHtml(html, url) {
     return result.players.map((p) => ({
         number: p.number || '',
         name: p.name || '',
-        position: p.position || '',
     }));
 }
 

@@ -172,7 +172,6 @@ function RosterEditor(side) {
             <tr data-i="${i}">
               <td class="num"><input data-f="number" value="${escapeHtml(p.number)}" inputmode="numeric" maxlength="3" aria-label="Number" ${editing ? '' : 'readonly'}></td>
               <td><input data-f="name" value="${escapeHtml(p.name)}" aria-label="Name" ${editing ? '' : 'readonly'}></td>
-              <td class="pos"><input data-f="position" value="${escapeHtml(p.position || '')}" aria-label="Position" ${editing ? '' : 'readonly'}></td>
               <td class="del">${editing ? '<button class="small danger" data-del type="button" aria-label="Remove">✕</button>' : ''}</td>
             </tr>`).join('');
         q('.save').classList.toggle('hidden', !editing);
@@ -198,7 +197,7 @@ function RosterEditor(side) {
             startDraft(saved.slice().sort(byNumber), '');
             return;
         }
-        draft.push({ number: '', name: '', position: '' });
+        draft.push({ number: '', name: '' });
         renderReview(draft, true);
         const inputs = q('tbody').querySelectorAll('tr:last-child input');
         if (inputs.length) {
@@ -211,7 +210,7 @@ function RosterEditor(side) {
     });
     q('.save').addEventListener('click', async () => {
         const players = draft
-            .map((p) => ({ number: String(p.number || '').replace(/\D/g, '').slice(0, 3), name: p.name.trim(), position: p.position || '' }))
+            .map((p) => ({ number: String(p.number || '').replace(/\D/g, '').slice(0, 3), name: p.name.trim() }))
             .filter((p) => p.name || p.number)
             .sort(byNumber);
         q('.save').disabled = true;

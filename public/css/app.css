@@ -167,7 +167,6 @@ th, td { text-align: left; padding: 6px 4px; border-bottom: 1px solid var(--bord
 th { font-size: 13px; color: var(--muted); font-weight: 600; }
 td input { padding: 6px 8px; }
 td.num { width: 64px; }
-td.pos { width: 72px; }
 td.del { width: 44px; }
 
 /* Sub cards (entry + viewer) */

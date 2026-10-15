@@ -95,7 +95,6 @@ export function saveRoster(gameId, side, players, sourceUrl = '') {
         players: players.slice(0, 80).map((p) => ({
             number: String(p.number || '').slice(0, 3),
             name: String(p.name || '').slice(0, 120),
-            position: String(p.position || '').slice(0, 20),
         })),
         sourceUrl: String(sourceUrl || '').slice(0, 300),
         updatedAt: serverTimestamp(),
