@@ -187,23 +187,31 @@ function pickPlayer(field) {
 
 function renderPicker() {
     const filter = $('picker-filter').value.trim();
-    const other = form[pickingField === 'playerOut' ? 'playerIn' : 'playerOut'];
+    // The player already chosen for the other side of the swap stays in the
+    // grid, disabled and colored (green IN / red OUT), so it's clear who it is.
+    const otherSide = pickingField === 'playerOut' ? 'in' : 'out';
+    const other = form[otherSide === 'in' ? 'playerIn' : 'playerOut'];
+    const isOther = (number, name) => !!other && (other.number || other.name)
+        && number === other.number && name === other.name;
     const isNum = /^\d+$/.test(filter);
     const players = (rosters[form.team] || [])
-        .filter((p) => !other || p.number !== other.number || p.name !== other.name)
         .filter((p) => !filter || (isNum ? p.number.startsWith(filter) : p.name.toLowerCase().includes(filter.toLowerCase())))
         .slice()
         .sort(byNumber);
-    let html = players.map((p) => `
-        <button type="button" data-number="${escapeHtml(p.number)}" data-name="${escapeHtml(p.name)}">
-          <span class="n">${p.number ? '#' + escapeHtml(p.number) : '—'}</span>
-          <span class="nm">${escapeHtml(p.name)}</span>
-        </button>`).join('');
+    const button = (number, name, sub) => isOther(number, name)
+        ? `<button type="button" class="chosen io-${otherSide}" disabled>
+             <span class="n">${number ? '#' + escapeHtml(number) : '—'}</span>
+             <span class="nm">${otherSide === 'in' ? 'IN' : 'OUT'}${sub ? ' · ' + escapeHtml(sub) : ''}</span>
+           </button>`
+        : `<button type="button" data-number="${escapeHtml(number)}" data-name="${escapeHtml(name)}">
+             <span class="n">${number ? '#' + escapeHtml(number) : '—'}</span>
+             <span class="nm">${escapeHtml(sub)}</span>
+           </button>`;
+    let html = players.map((p) => button(p.number, p.name, p.name)).join('');
     // Allow a number that isn't on the roster (late addition, typo in the
     // imported roster) so entry is never blocked.
     if (isNum && filter.length <= 3 && !players.some((p) => p.number === filter)) {
-        html += `<button type="button" data-number="${escapeHtml(filter)}" data-name="">
-            <span class="n">#${escapeHtml(filter)}</span><span class="nm">not on roster</span></button>`;
+        html += button(filter, '', 'not on roster');
     }
     if (!html) {
         html = '<p class="muted">' + ((rosters[form.team] || []).length
@@ -217,7 +225,7 @@ $('picker-filter').addEventListener('input', renderPicker);
 $('picker-filter').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
         e.preventDefault();
-        const first = $('picker-grid').querySelector('button');
+        const first = $('picker-grid').querySelector('button:not(:disabled)');
         if (first) {
             first.click();
         }

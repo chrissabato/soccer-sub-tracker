@@ -286,6 +286,8 @@ dialog .footer { display: flex; gap: 8px; justify-content: flex-end; margin-top:
 }
 .player-grid button { flex-direction: column; min-height: 64px; padding: 6px; font-weight: 500; }
 .player-grid .n { font-size: 22px; font-weight: 800; }
+.player-grid button.chosen { background: var(--io); border-color: var(--io); color: var(--io-text); opacity: 1; cursor: default; }
+.player-grid button.chosen .nm { color: var(--io-text); font-weight: 700; }
 .player-grid .nm { font-size: 13px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
 
 .minute-input { font-size: 32px; text-align: center; font-variant-numeric: tabular-nums; }
