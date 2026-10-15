@@ -81,6 +81,16 @@ h2 { font-size: 17px; margin: 0 0 12px; }
     margin-bottom: 16px;
 }
 
+.game-row {
+    display: grid;
+    grid-template-columns: minmax(170px, auto) 1fr 1fr;
+    gap: 16px;
+    align-items: end;
+}
+@media (max-width: 640px) {
+    .game-row { grid-template-columns: 1fr; }
+}
+
 .grid-2 {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));

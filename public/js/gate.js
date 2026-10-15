@@ -1,5 +1,6 @@
 // Editor-only pages (setup, entry) start here: reads ?g=, and if this
-// browser hasn't joined the game yet, shows a code prompt in #gate and
+// browser hasn't joined the game yet, joins with the code from the link's
+// #code= (the setup page's entry QR) or shows a code prompt in #gate and
 // waits for a correct code. Resolves with the gameId once allowed.
 import { isEditor, joinGame } from './store.js';
 
@@ -15,8 +16,21 @@ export async function requireEditor() {
         gate.classList.remove('hidden');
         return new Promise(() => {});
     }
+    const linkCode = new URLSearchParams(location.hash.slice(1)).get('code');
+    if (linkCode) {
+        // Don't leave the code in the address bar or browser history.
+        history.replaceState(null, '', location.pathname + location.search);
+    }
     if (await isEditor(gameId)) {
         return gameId;
+    }
+    if (linkCode) {
+        try {
+            await joinGame(gameId, linkCode);
+            return gameId;
+        } catch (err) {
+            // Fall through to the prompt (e.g. a QR from an expired game).
+        }
     }
     gate.innerHTML = `
         <h2>Enter the game code</h2>

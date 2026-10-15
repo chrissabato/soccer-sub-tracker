@@ -29,7 +29,7 @@ const entryUrl = new URL('entry.html?g=' + encodeURIComponent(gameId), base).hre
 const viewUrl = new URL('view.html?g=' + encodeURIComponent(gameId), base).href;
 $('entry-link').href = $('go-entry').href = $('nav-entry').href = entryUrl;
 $('entry-link').textContent = entryUrl;
-$('view-link').href = $('nav-view').href = viewUrl;
+$('view-link').href = $('nav-view').href = $('open-view').href = viewUrl;
 $('view-link').textContent = viewUrl;
 if (window.QRCode) {
     new window.QRCode($('qr'), { text: viewUrl, width: 144, height: 144 });
@@ -43,7 +43,14 @@ $('copy-view').addEventListener('click', async () => {
     }
     setTimeout(() => { $('copy-view').textContent = 'Copy viewer link'; }, 1500);
 });
-getCode(gameId).then((code) => { $('code').textContent = code || '??????'; });
+getCode(gameId).then((code) => {
+    $('code').textContent = code || '??????';
+    // The entry QR carries the code after '#' (never sent to the server), so
+    // scanning it unlocks sub entry without typing. See gate.js.
+    if (code && window.QRCode) {
+        new window.QRCode($('entry-qr'), { text: entryUrl + '#code=' + code, width: 144, height: 144 });
+    }
+});
 
 SIDES.forEach((side) => { editors[side] = new RosterEditor(side); });
 
