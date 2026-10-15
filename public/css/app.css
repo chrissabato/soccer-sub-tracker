@@ -227,9 +227,12 @@ body.entry main { padding-bottom: 96px; }
 .execute-bar button { max-width: 928px; margin: 0 auto; display: flex; }
 
 /* Dialogs */
+/* Anchored near the top (not centered) so a phone's on-screen keyboard,
+   which rises from the bottom, doesn't cover the dialog. */
 dialog {
+    margin: max(12px, env(safe-area-inset-top)) auto auto;
     width: min(560px, calc(100vw - 16px));
-    max-height: calc(100dvh - 16px);
+    max-height: calc(100dvh - 24px);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     background: var(--surface);
