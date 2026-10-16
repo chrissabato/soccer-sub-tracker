@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Soccer Sub Tracker</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%E2%9A%BD%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="../css/app.css">
+</head>
+<body>
+<header class="bar"><h1><a class="brand" href="../">Soccer Sub Tracker</a></h1></header>
+<main>
+  <section id="recent" class="card hidden">
+    <h2>Recent games</h2>
+    <ul id="recent-list" class="recent-list"></ul>
+  </section>
+
+  <section class="card">
+    <h2>Enter a game code</h2>
+    <form id="join" class="row" autocomplete="off">
+      <input id="code" name="code" placeholder="ABC234" maxlength="8" autocapitalize="characters" spellcheck="false" aria-label="Game code" required>
+      <button class="primary" type="submit">Go</button>
+    </form>
+    <p id="join-error" class="error" role="alert"></p>
+  </section>
+
+  <section class="card">
+    <h2>New game</h2>
+    <form id="create" autocomplete="off">
+      <label for="division">Sport</label>
+      <select id="division" required>
+        <option value="womens">Women's soccer</option>
+        <option value="mens">Men's soccer</option>
+      </select>
+      <label for="home">Home team</label>
+      <input id="home" list="schools" placeholder="Start typing a school" required>
+      <label for="away">Away team</label>
+      <input id="away" list="schools" placeholder="Start typing a school" required>
+      <datalist id="schools"></datalist>
+      <p><button class="primary big" type="submit">Create game</button></p>
+      <p id="create-error" class="error" role="alert"></p>
+      <p class="muted">You'll get a game code for the sub-entry phone and a viewer link for the press box. Games are deleted 72 hours after they're created.</p>
+    </form>
+  </section>
+</main>
+<script type="module" src="../js/home.js"></script>
+</body>
+</html>

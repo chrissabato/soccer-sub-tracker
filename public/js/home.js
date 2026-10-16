@@ -22,9 +22,9 @@ function renderRecent() {
               <span class="muted">${escapeHtml([divisionLabel(g.division), when].filter(Boolean).join(' · '))}</span>
             </div>
             <div class="recent-actions">
-              <a class="button small primary" href="entry.html${q}">Sub entry</a>
-              <a class="button small" href="setup.html${q}">Setup</a>
-              <a class="button small" href="view.html${q}">Viewer</a>
+              <a class="button small primary" href="../entry.html${q}">Sub entry</a>
+              <a class="button small" href="../setup.html${q}">Setup</a>
+              <a class="button small" href="../view.html${q}">Viewer</a>
               <button class="small" type="button" data-forget aria-label="Remove from recent games" title="Remove from recent games">✕</button>
             </div>
           </li>`;
@@ -39,6 +39,12 @@ $('recent-list').addEventListener('click', (e) => {
 });
 renderRecent();
 
+// From the showcase's "Have a game code?" link. Deferred until after load:
+// the browser's own jump to #join would otherwise reset the focus.
+if (location.hash === '#join') {
+    window.addEventListener('load', () => setTimeout(() => $('code').focus(), 0));
+}
+
 loadSchools().then((list) => {
     schools = list;
     fillDatalist($('schools'), list);
@@ -51,7 +57,7 @@ $('join').addEventListener('submit', async (e) => {
     $('join-error').textContent = '';
     try {
         const gameId = await joinWithCode($('code').value);
-        location.href = 'entry.html?g=' + encodeURIComponent(gameId);
+        location.href = '../entry.html?g=' + encodeURIComponent(gameId);
     } catch (err) {
         $('join-error').textContent = err.message;
         button.disabled = false;
@@ -75,7 +81,7 @@ $('create').addEventListener('submit', async (e) => {
             away: side($('away')),
             division: $('division').value,
         });
-        location.href = 'setup.html?g=' + encodeURIComponent(gameId);
+        location.href = '../setup.html?g=' + encodeURIComponent(gameId);
     } catch (err) {
         $('create-error').textContent = 'Could not create the game: ' + err.message;
         button.disabled = false;

@@ -12,7 +12,7 @@ export async function requireEditor() {
     const gameId = gameIdFromUrl();
     const gate = document.getElementById('gate');
     if (!gameId) {
-        gate.innerHTML = '<p class="error">No game in the link. <a href="./">Start over</a>.</p>';
+        gate.innerHTML = '<p class="error">No game in the link. <a href="start/">Start over</a>.</p>';
         gate.classList.remove('hidden');
         return new Promise(() => {});
     }

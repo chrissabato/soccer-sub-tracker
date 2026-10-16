@@ -31,7 +31,7 @@ const viewUrl = new URL('view.html?g=' + encodeURIComponent(gameId), base).href;
 $('nav-entry').href = entryUrl;
 $('nav-view').href = $('open-view').href = viewUrl;
 $('open-pa').href = new URL('pa.html?g=' + encodeURIComponent(gameId), base).href;
-$('site-host').textContent = location.host;
+$('site-host').textContent = new URL('start', base).host + new URL('start', base).pathname;
 $('copy-view').addEventListener('click', async () => {
     try {
         await navigator.clipboard.writeText(viewUrl);
