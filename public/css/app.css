@@ -524,3 +524,9 @@ body.pa-has-pending .pa-pending { flex: 2 1 0; }
 @media (prefers-reduced-motion: reduce) {
     .pa-now.lit.pulse { animation: none; }
 }
+/* PA view on desktop: one sub per row, IN and OUT side by side */
+@media (min-width: 1100px) {
+    .pa-subs { grid-template-columns: 1fr; }
+    .pa-card { display: grid; grid-template-columns: 1fr 1fr; column-gap: 48px; align-items: baseline; }
+    .pa-card .team-tag { grid-column: 1 / -1; justify-self: start; }
+}
