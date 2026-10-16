@@ -2,7 +2,7 @@
 import { watchGame, watchSubs } from './store.js';
 import { rememberGame } from './recent.js';
 import { escapeHtml, playerLabel, toCsv, slug } from './lib.js';
-import { applyTeamColors, glanceCard, teamName, divisionLabel, doneNewestFirst, doneOldestFirst, timeOfDay, minuteLabel } from './render.js';
+import { applyTeamColors, glanceCard, teamName, divisionLabel, doneNewestFirst, doneOldestFirst, timeOfDay, minuteLabel, inOutOrder } from './render.js';
 
 const $ = (id) => document.getElementById(id);
 const gameId = new URLSearchParams(location.search).get('g') || '';
@@ -77,9 +77,9 @@ function render() {
           <td class="tod">${escapeHtml(timeOfDay(s))}</td>
           <td class="minute">${minuteLabel(s)}</td>
           <td><span class="team-tag">${escapeHtml(teamName(game, s.team))}</span></td>
-          <td>${escapeHtml(playerLabel(s.playerIn))}</td>
-          <td>${escapeHtml(playerLabel(s.playerOut))}</td>
+          ${inOutOrder(game, `<td>${escapeHtml(playerLabel(s.playerIn))}</td>`, `<td>${escapeHtml(playerLabel(s.playerOut))}</td>`).join('')}
         </tr>`).join('');
+    [$('col-a').textContent, $('col-b').textContent] = inOutOrder(game, 'In', 'Out');
     $('log-empty').classList.toggle('hidden', done.length > 0);
     $('print').disabled = $('export').disabled = done.length === 0;
 
@@ -125,15 +125,14 @@ function buildPrintSheet() {
         <p>${escapeHtml(divisionLabel(game.division))} · ${escapeHtml(gameDate().toLocaleDateString([], { dateStyle: 'long' }))}
            · Substitutions: ${done.length}</p>
         <table>
-          <thead><tr><th>#</th><th>TOD</th><th>Clock</th><th>Team</th><th>In</th><th>Out</th></tr></thead>
+          <thead><tr><th>#</th><th>TOD</th><th>Clock</th><th>Team</th>${inOutOrder(game, '<th>In</th>', '<th>Out</th>').join('')}</tr></thead>
           <tbody>${done.map((s, i) => `
             <tr>
               <td>${i + 1}</td>
               <td>${escapeHtml(timeOfDay(s))}</td>
               <td>${minuteLabel(s)}</td>
               <td>${escapeHtml(teamName(game, s.team))} (${s.team === 'home' ? 'H' : 'A'})</td>
-              <td>${escapeHtml(playerLabel(s.playerIn))}</td>
-              <td>${escapeHtml(playerLabel(s.playerOut))}</td>
+              ${inOutOrder(game, `<td>${escapeHtml(playerLabel(s.playerIn))}</td>`, `<td>${escapeHtml(playerLabel(s.playerOut))}</td>`).join('')}
             </tr>`).join('')}</tbody>
         </table>
         <p class="printed">Printed ${escapeHtml(new Date().toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }))}</p>`;
@@ -153,7 +152,7 @@ $('export').addEventListener('click', () => {
     if (!game) {
         return;
     }
-    const rows = [['Date', 'TOD', 'Clock', 'Team', 'Home/Away', 'In #', 'In name', 'Out #', 'Out name']];
+    const rows = [['Date', 'TOD', 'Clock', 'Team', 'Home/Away', ...inOutOrder(game, ['In #', 'In name'], ['Out #', 'Out name']).flat()]];
     doneOldestFirst(subs).forEach((s) => {
         const t = s.executedAt ? s.executedAt.toDate() : null;
         rows.push([
@@ -162,8 +161,7 @@ $('export').addEventListener('click', () => {
             s.minute || '',
             teamName(game, s.team),
             s.team === 'home' ? 'Home' : 'Away',
-            s.playerIn.number, s.playerIn.name,
-            s.playerOut.number, s.playerOut.name,
+            ...inOutOrder(game, [s.playerIn.number, s.playerIn.name], [s.playerOut.number, s.playerOut.name]).flat(),
         ]);
     });
     const name = ['subs', slug(teamName(game, 'home')), 'vs', slug(teamName(game, 'away')), isoDate(gameDate())].join('-') + '.csv';

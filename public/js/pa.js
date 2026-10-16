@@ -3,7 +3,7 @@
 // is two big lines, IN and OUT, sized for reading names at a distance.
 import { watchGame, watchSubs } from './store.js';
 import { escapeHtml } from './lib.js';
-import { applyTeamColors, teamName, doneNewestFirst, minuteLabel } from './render.js';
+import { applyTeamColors, teamName, doneNewestFirst, minuteLabel, inOutOrder } from './render.js';
 import { rememberGame } from './recent.js';
 
 const $ = (id) => document.getElementById(id);
@@ -35,8 +35,7 @@ function card(s) {
     return `
       <div class="pa-card team-${s.team}">
         <span class="team-tag">${escapeHtml(teamName(game, s.team))}</span>
-        ${line(s.playerIn, 'in', 'IN')}
-        ${line(s.playerOut, 'out', 'OUT')}
+        ${inOutOrder(game, line(s.playerIn, 'in', 'IN'), line(s.playerOut, 'out', 'OUT')).join('')}
       </div>`;
 }
 

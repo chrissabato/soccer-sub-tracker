@@ -17,6 +17,16 @@ export function applyTeamColors(game) {
     });
 }
 
+// The game's sub order setting: OUT first, or IN first (the default).
+export function outFirst(game) {
+    return !!game && game.subOrder === 'out';
+}
+
+// [a, b] in the game's sub order, where a is the IN item and b the OUT one.
+export function inOutOrder(game, a, b) {
+    return outFirst(game) ? [b, a] : [a, b];
+}
+
 export function teamName(game, side) {
     const name = game && game[side] && game[side].name;
     return name || (side === 'home' ? 'Home' : 'Away');
@@ -45,8 +55,9 @@ export function subCard(sub, game, opts = {}) {
         ${opts.minute ? `<span class="minute">${minuteLabel(sub)}<span class="tod">${escapeHtml(timeOfDay(sub))}</span></span>` : ''}
         <div class="swap">
           <span class="team-tag">${escapeHtml(teamName(game, sub.team))}</span>
-          <span class="in">${escapeHtml(playerLabel(sub.playerIn))}</span>
-          <span class="out">${escapeHtml(playerLabel(sub.playerOut))}</span>
+          ${inOutOrder(game,
+              `<span class="in">${escapeHtml(playerLabel(sub.playerIn))}</span>`,
+              `<span class="out">${escapeHtml(playerLabel(sub.playerOut))}</span>`).join('')}
         </div>
         ${opts.actions ? `<div class="actions">${opts.actions}</div>` : ''}
       </div>`;
@@ -66,9 +77,8 @@ export function glanceCard(sub, game, opts = { team: true }) {
       <div class="glance team-${sub.team}">
         ${opts.team ? `<span class="team-tag">${escapeHtml(teamName(game, sub.team))}</span>` : ''}
         <div class="glance-swap">
-          ${side(sub.playerIn, 'in', 'IN')}
-          <span class="glance-for" role="img" aria-label="for">⇄</span>
-          ${side(sub.playerOut, 'out', 'OUT')}
+          ${inOutOrder(game, side(sub.playerIn, 'in', 'IN'), side(sub.playerOut, 'out', 'OUT'))
+              .join('<span class="glance-for" role="img" aria-label="for">⇄</span>')}
         </div>
       </div>`;
 }

@@ -65,6 +65,9 @@ watchGame(gameId, (g) => {
     if (document.activeElement !== $('division')) {
         $('division').value = g.division;
     }
+    if (document.activeElement !== $('sub-order')) {
+        $('sub-order').value = g.subOrder === 'out' ? 'out' : 'in';
+    }
     SIDES.forEach((side) => {
         if (document.activeElement !== $(side + '-name')) {
             $(side + '-name').value = g[side].name;
@@ -93,6 +96,7 @@ async function saveGame(fields) {
 }
 
 $('division').addEventListener('change', () => saveGame({ division: $('division').value }));
+$('sub-order').addEventListener('change', () => saveGame({ subOrder: $('sub-order').value }));
 SIDES.forEach((side) => {
     $(side + '-name').addEventListener('change', (e) => {
         const school = findSchool(schools, e.target.value);

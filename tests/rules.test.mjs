@@ -140,6 +140,15 @@ test('team colors must be #rrggbb and are optional', async () => {
     await assertFails(updateDoc(doc(editor, 'games', 'g1'), { home: { name: 'H', url: '', color: '#ffd700', logo: 'x' } }));
 });
 
+test('sub order setting must be in or out', async () => {
+    await seed();
+    const editor = as('creator');
+    await assertSucceeds(updateDoc(doc(editor, 'games', 'g1'), { subOrder: 'out' }));
+    await assertSucceeds(updateDoc(doc(editor, 'games', 'g1'), { subOrder: 'in' }));
+    await assertFails(updateDoc(doc(editor, 'games', 'g1'), { subOrder: 'sideways' }));
+    await assertFails(updateDoc(doc(as('outsider'), 'games', 'g1'), { subOrder: 'out' }));
+});
+
 test('sub shape is validated', async () => {
     await seed();
     const editor = as('creator');

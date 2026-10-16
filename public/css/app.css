@@ -93,7 +93,7 @@ h2 { font-size: 17px; margin: 0 0 12px; }
 
 .game-row {
     display: grid;
-    grid-template-columns: minmax(170px, auto) 1fr 1fr;
+    grid-template-columns: minmax(150px, auto) 1fr 1fr minmax(130px, auto);
     gap: 16px;
     align-items: end;
 }

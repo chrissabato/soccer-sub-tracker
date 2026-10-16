@@ -38,6 +38,11 @@ service cloud.firestore {
         && (!('color' in t) || (t.color is string && t.color.matches('^#[0-9a-f]{6}$')));
     }
 
+    // Whether subs are picked and shown IN first (default) or OUT first.
+    function validSubOrder(d) {
+      return !('subOrder' in d) || d.subOrder in ['in', 'out'];
+    }
+
     function validPlayer(p) {
       return p is map
         && p.keys().hasOnly(['number', 'name'])
@@ -104,7 +109,8 @@ service cloud.firestore {
       allow read: if true;
 
       allow create: if signedIn()
-        && request.resource.data.keys().hasOnly(['home', 'away', 'division', 'createdAt', 'creatorUid'])
+        && request.resource.data.keys().hasOnly(['home', 'away', 'division', 'subOrder', 'createdAt', 'creatorUid'])
+        && validSubOrder(request.resource.data)
         && request.resource.data.creatorUid == request.auth.uid
         && request.resource.data.createdAt == request.time
         && request.resource.data.division in ['mens', 'womens']
@@ -113,7 +119,8 @@ service cloud.firestore {
         && getAfter(/databases/$(database)/documents/games/$(gid)/secret/code) != null;
 
       allow update: if isEditor(gid)
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['home', 'away', 'division'])
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['home', 'away', 'division', 'subOrder'])
+        && validSubOrder(request.resource.data)
         && request.resource.data.division in ['mens', 'womens']
         && validTeam(request.resource.data.home)
         && validTeam(request.resource.data.away);

@@ -1,7 +1,7 @@
 import { requireEditor } from './gate.js';
 import { watchGame, watchRosters, watchSubs, addSub, editSub, cancelSub, executeSubs } from './store.js';
 import { normalizeMinute, formatClockDigits, playerLabel, byNumber, escapeHtml } from './lib.js';
-import { applyTeamColors, subCard, teamName, doneNewestFirst } from './render.js';
+import { applyTeamColors, subCard, teamName, doneNewestFirst, outFirst } from './render.js';
 import { rememberGame } from './recent.js';
 
 const $ = (id) => document.getElementById(id);
@@ -32,6 +32,14 @@ watchGame(gameId, (g) => {
     document.querySelectorAll('#team-toggle button').forEach((b) => {
         b.textContent = teamName(g, b.dataset.team);
     });
+    // Sub order setting: put the first-picked row on top in the sub dialog.
+    const inRow = $('pick-in').closest('.io-row');
+    const outRow = $('pick-out').closest('.io-row');
+    if (outFirst(g)) {
+        inRow.before(outRow);
+    } else {
+        outRow.before(inRow);
+    }
     document.querySelectorAll('.add-team').forEach((b) => {
         b.textContent = '+ ' + teamName(g, b.dataset.team) + ' sub';
     });
@@ -98,6 +106,10 @@ $('done').addEventListener('click', onListClick);
 
 let form = null; // { sub (when editing), team, playerIn, playerOut }
 
+// Which player the sub order setting asks for first.
+const firstField = () => (outFirst(game) ? 'playerOut' : 'playerIn');
+const otherField = (field) => (field === 'playerIn' ? 'playerOut' : 'playerIn');
+
 // Edits an existing sub, or adds one for `side` (from the team's add button).
 function openSubDialog(sub, side = 'home') {
     form = sub
@@ -112,7 +124,7 @@ function openSubDialog(sub, side = 'home') {
     renderSubForm();
     $('sub-dialog').showModal();
     if (!sub) {
-        pickPlayer('playerIn');
+        pickPlayer(firstField());
     }
 }
 
@@ -240,7 +252,7 @@ $('picker-grid').addEventListener('click', (e) => {
         return;
     }
     form[pickingField] = { number: b.dataset.number, name: b.dataset.name };
-    const next = pickingField === 'playerIn' && !form.playerOut ? 'playerOut' : null;
+    const next = pickingField === firstField() && !form[otherField(pickingField)] ? otherField(pickingField) : null;
     $('picker').close();
     renderSubForm();
     if (next) {
