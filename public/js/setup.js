@@ -30,6 +30,7 @@ const entryUrl = new URL('entry.html?g=' + encodeURIComponent(gameId), base).hre
 const viewUrl = new URL('view.html?g=' + encodeURIComponent(gameId), base).href;
 $('nav-entry').href = entryUrl;
 $('nav-view').href = $('open-view').href = viewUrl;
+$('open-pa').href = new URL('pa.html?g=' + encodeURIComponent(gameId), base).href;
 $('site-host').textContent = location.host;
 $('copy-view').addEventListener('click', async () => {
     try {

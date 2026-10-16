@@ -448,3 +448,79 @@ body.viewer main { max-width: 1280px; }
 .recent-list li:first-child { border-top: 0; padding-top: 0; }
 .recent-info { display: flex; flex-direction: column; min-width: 0; }
 .recent-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+
+/* PA view: full screen, big names */
+body.pa { overflow: hidden; }
+.pa-page {
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    padding: 12px 20px 20px;
+    gap: 14px;
+}
+.pa-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.pa-title { font-size: clamp(16px, 1.6vw, 26px); font-weight: 700; }
+.pa-error:empty { display: none; }
+.pa-section {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 20px;
+    transition: border-color 2s ease, box-shadow 2s ease, background-color 2s ease;
+}
+/* Now gets the most room; it shares the page with Pending only when there is any. */
+.pa-now { flex: 1 1 0; }
+.pa-pending { flex: 0 0 auto; }
+body.pa-has-pending .pa-now { flex: 3 1 0; }
+body.pa-has-pending .pa-pending { flex: 2 1 0; }
+.pa-label {
+    margin: 0 0 8px;
+    font-size: clamp(14px, 1.3vw, 22px);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--muted);
+}
+.pa-time { color: var(--text); }
+.pa-subs {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    display: grid;
+    /* auto-fit: two subs split the width in half instead of leaving an empty column */
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 520px), 1fr));
+    align-content: start;
+    gap: 12px 28px;
+}
+.pa-empty { color: var(--muted); font-size: clamp(18px, 2vw, 32px); margin: 0; }
+.pa-card {
+    border-left: 8px solid var(--team);
+    background: var(--surface-2);
+    border-radius: 8px;
+    padding: 10px 18px 12px;
+}
+.pa-card .team-tag { font-size: clamp(12px, 1.1vw, 18px); }
+.pa-line {
+    display: grid;
+    grid-template-columns: 1.15em 1.3em 1fr;
+    align-items: baseline;
+    gap: .35em;
+    font-size: clamp(26px, 3.4vw, 60px);
+    line-height: 1.15;
+    margin-top: 4px;
+}
+.pa-io { font-size: .45em; font-weight: 800; letter-spacing: .06em; color: var(--io); }
+.pa-num { font-weight: 900; font-variant-numeric: tabular-nums; color: var(--io); text-align: right; }
+.pa-name { font-weight: 700; overflow-wrap: break-word; min-width: 0; }
+.pa-pending .pa-line { font-size: clamp(22px, 2.6vw, 44px); }
+.pa-now.lit {
+    border-color: var(--neon);
+    background: var(--neon-tint);
+    box-shadow: 0 0 6px 2px var(--neon-glow), 0 0 28px 6px var(--neon-glow);
+}
+.pa-now.lit.pulse { animation: neon-pulse 1.6s ease-in-out infinite alternate; }
+@media (prefers-reduced-motion: reduce) {
+    .pa-now.lit.pulse { animation: none; }
+}
