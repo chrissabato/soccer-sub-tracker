@@ -351,7 +351,16 @@ body.viewer main { max-width: 1280px; }
     text-overflow: ellipsis;
 }
 .glance-for { font-size: 18px; font-weight: 600; color: var(--muted); padding-bottom: 26px; }
-#latest-subs { display: flex; flex-wrap: wrap; gap: 8px 40px; }
+/* Equal-width cards, as many per row as fit; inside each, IN and OUT get
+   equal halves so the numbers line up from card to card. */
+#latest-subs {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 16px 24px;
+}
+.latest .glance-swap { display: grid; grid-template-columns: 1fr auto 1fr; }
+.latest .glance-player { min-width: 0; }
+.latest .glance-name { max-width: 100%; }
 .latest .glance { background: transparent; border-left-width: 8px; margin-bottom: 0; }
 .latest .glance-num { font-size: 88px; }
 .latest .glance-label { font-size: 15px; }
