@@ -72,6 +72,11 @@ export function attachAutocomplete(input, { items, match, render }) {
     input.addEventListener('input', () => {
         const q = input.value.trim();
         matches = q.length >= 2 ? match(items(), q) : [];
+        // Typed in full: nothing left to suggest, and an open list would
+        // cover whatever comes next (e.g. the Create game button).
+        if (matches.some((m) => render(m).label.toLowerCase() === q.toLowerCase())) {
+            matches = [];
+        }
         active = -1;
         show();
     });
