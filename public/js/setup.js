@@ -139,6 +139,7 @@ function RosterEditor(side) {
         q('.team-name').textContent = t.name || (side === 'home' ? 'Home' : 'Away');
         const guesses = guessRosterUrls(siteUrl(), division);
         q('.url').placeholder = guesses[0] || 'https://…/roster';
+        updateOpenLink();
     };
 
     this.setSaved = (players) => {
@@ -160,6 +161,21 @@ function RosterEditor(side) {
         const school = findSchool(schools, teamInfo.name);
         return school ? school.url : '';
     }
+
+    // The open-in-new-tab button goes to the typed URL, else the default
+    // (Sidearm) guess; disabled when there's neither.
+    function updateOpenLink() {
+        const url = q('.url').value.trim() || guessRosterUrls(siteUrl(), division)[0] || '';
+        const link = q('.open-roster');
+        if (/^https?:\/\//i.test(url)) {
+            link.href = url;
+            link.removeAttribute('aria-disabled');
+        } else {
+            link.removeAttribute('href');
+            link.setAttribute('aria-disabled', 'true');
+        }
+    }
+    q('.url').addEventListener('input', updateOpenLink);
 
     function startDraft(players, source) {
         draft = players.map((p) => ({ ...p }));
@@ -241,6 +257,7 @@ function RosterEditor(side) {
         try {
             const result = await fetchFirstRoster(urls);
             q('.url').value = result.url;
+            updateOpenLink();
             q('.fetch-status').textContent = 'Found ' + result.players.length + ' players. Check them, then Save roster.';
             startDraft(result.players, result.url);
         } catch (err) {
