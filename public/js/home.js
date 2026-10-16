@@ -25,7 +25,7 @@ function renderRecent() {
             </div>
             <div class="recent-actions">
               <a class="button small primary" href="../setup.html${q}">Setup</a>
-              <a class="button small primary" href="../entry.html${q}">Sub entry</a>
+              <a class="button small primary" href="../entry.html${q}">Subs</a>
               <a class="button small primary" href="../view.html${q}">Viewer</a>
               <a class="button small primary" href="../pa.html${q}">PA</a>
               <button class="small" type="button" data-forget aria-label="Remove from recent games" title="Remove from recent games">✕</button>
