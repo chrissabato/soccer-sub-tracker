@@ -414,14 +414,14 @@ body.viewer main { max-width: 1280px; }
 .print-only { display: none; }
 @media print {
     body > *:not(#print-sheet) { display: none !important; }
-    body { background: #fff; color: #000; font-size: 11pt; }
+    body { background: #fff; color: #000; font-size: 9pt; }
     #print-sheet { display: block; }
-    #print-sheet h1 { font-size: 18pt; margin: 0 0 4pt; }
-    #print-sheet p { margin: 0 0 10pt; }
+    #print-sheet h1 { font-size: 15pt; margin: 0 0 3pt; }
+    #print-sheet p { margin: 0 0 8pt; }
     #print-sheet table { width: 100%; border-collapse: collapse; }
-    #print-sheet th, #print-sheet td { border-bottom: 1px solid #999; padding: 4pt 6pt; text-align: left; color: #000; }
-    #print-sheet th { font-size: 9pt; text-transform: uppercase; }
+    #print-sheet th, #print-sheet td { border-bottom: 1px solid #999; padding: 3pt 5pt; text-align: left; color: #000; white-space: nowrap; }
+    #print-sheet th { font-size: 7.5pt; text-transform: uppercase; }
     #print-sheet tr { break-inside: avoid; }
-    #print-sheet .printed { margin-top: 10pt; font-size: 9pt; color: #555; }
-    @page { margin: 14mm; }
+    #print-sheet .printed { margin-top: 8pt; font-size: 7.5pt; color: #555; }
+    @page { margin: 12mm; }
 }
