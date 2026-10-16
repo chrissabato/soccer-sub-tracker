@@ -68,7 +68,12 @@ export async function joinWithCode(input) {
         throw new Error('No game has that code. It may have expired.');
     }
     const gameId = snap.data().gameId;
-    await setDoc(editorRef(gameId, user.uid), { code });
+    // Already joined in this browser (e.g. the game's creator, or a second
+    // entry of the code): the rules allow creating the editor doc but not
+    // overwriting it, so don't write again.
+    if (!(await getDoc(editorRef(gameId, user.uid))).exists()) {
+        await setDoc(editorRef(gameId, user.uid), { code });
+    }
     return gameId;
 }
 
