@@ -21,17 +21,18 @@
         <h2>Press box viewer</h2>
         <p class="muted">Live, read-only view of pending and completed subs.</p>
         <div class="share-actions">
-          <a id="open-view" class="button primary" href="#" target="_blank" rel="noopener">Open viewer</a>
-          <a id="open-pa" class="button" href="#" target="_blank" rel="noopener">Open PA view</a>
-          <button id="copy-view" type="button">Copy link</button>
+          <a id="open-view" class="button primary" href="#" target="_blank" rel="noopener">Monitor</a>
+          <a id="open-pa" class="button" href="#" target="_blank" rel="noopener">PA</a>
         </div>
       </div>
       <div class="share-panel share-entry">
         <div id="entry-qr" class="qr" aria-label="QR code that opens sub entry on a phone"></div>
         <div>
           <h2>Sub entry phone</h2>
-          <p class="muted">Scan to open sub entry, or enter this code at <span id="site-host"></span>:</p>
           <div id="code" class="code">······</div>
+          <div class="share-actions">
+            <button id="copy-entry" type="button" disabled>Copy link</button>
+          </div>
         </div>
       </div>
     </section>

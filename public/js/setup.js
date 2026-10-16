@@ -31,22 +31,26 @@ const viewUrl = new URL('view.html?g=' + encodeURIComponent(gameId), base).href;
 $('nav-entry').href = entryUrl;
 $('nav-view').href = $('open-view').href = viewUrl;
 $('open-pa').href = new URL('pa.html?g=' + encodeURIComponent(gameId), base).href;
-$('site-host').textContent = new URL('start', base).host + new URL('start', base).pathname;
-$('copy-view').addEventListener('click', async () => {
-    try {
-        await navigator.clipboard.writeText(viewUrl);
-        $('copy-view').textContent = 'Copied';
-    } catch (err) {
-        $('copy-view').textContent = 'Copy failed';
-    }
-    setTimeout(() => { $('copy-view').textContent = 'Copy link'; }, 1500);
-});
 getCode(gameId).then((code) => {
     $('code').textContent = code || '??????';
     // The entry QR carries the code after '#' (never sent to the server), so
     // scanning it unlocks sub entry without typing. See gate.js.
     if (code && window.QRCode) {
         new window.QRCode($('entry-qr'), { text: entryUrl + '#code=' + code, width: 152, height: 152 });
+    }
+    if (code) {
+        // Same link as the QR: opens sub entry already unlocked.
+        const link = entryUrl + '#code=' + code;
+        $('copy-entry').disabled = false;
+        $('copy-entry').addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(link);
+                $('copy-entry').textContent = 'Copied';
+            } catch (err) {
+                $('copy-entry').textContent = 'Copy failed';
+            }
+            setTimeout(() => { $('copy-entry').textContent = 'Copy link'; }, 1500);
+        });
     }
 });
 
