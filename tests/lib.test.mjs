@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
     generateCode, normalizeCode, CODE_PATTERN, normalizeMinute, formatClockDigits, minuteSortValue,
-    season, guessRosterUrls, parsePasteList, byNumber, normalizeColor, contrastText,
+    season, guessRosterUrls, parsePasteList, byNumber, normalizeColor, contrastText, csvCell, toCsv, slug,
 } from '../public/js/lib.js';
 
 test('generated codes match the pattern the rules enforce', () => {
@@ -116,4 +116,23 @@ test('contrastText picks readable badge text', () => {
     assert.equal(contrastText('#ffd700'), '#000000'); // gold
     assert.equal(contrastText('#8b0000'), '#ffffff'); // dark red
     assert.equal(contrastText('#00ff00'), '#000000'); // bright green
+});
+
+test('CSV cells are quoted and formula-safe', () => {
+    assert.equal(csvCell('Ana Lopez'), 'Ana Lopez');
+    assert.equal(csvCell('Lopez, Ana'), '"Lopez, Ana"');
+    assert.equal(csvCell('The "Wall"'), '"The ""Wall"""');
+    assert.equal(csvCell('=HYPERLINK("x")'), `"'=HYPERLINK(""x"")"`);
+    assert.equal(csvCell('+1'), "'+1");
+    assert.equal(csvCell('-5'), "'-5");
+    assert.equal(csvCell('@me'), "'@me");
+    assert.equal(csvCell(10), '10');
+    assert.equal(csvCell(null), '');
+    assert.equal(toCsv([['a', 'b'], ['1', 'x,y']]), 'a,b\r\n1,"x,y"\r\n');
+});
+
+test('slug', () => {
+    assert.equal(slug('Willamette University'), 'willamette-university');
+    assert.equal(slug("Saint Mary's (Calif.)"), 'saint-mary-s-calif');
+    assert.equal(slug('Universidad de Bogotá'), 'universidad-de-bogota');
 });

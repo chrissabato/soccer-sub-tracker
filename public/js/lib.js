@@ -159,6 +159,27 @@ export function contrastText(hex) {
     return 1.05 / (l + 0.05) >= (l + 0.05) / 0.05 ? '#ffffff' : '#000000';
 }
 
+// One CSV cell: quoted when needed, and with a leading apostrophe on text
+// a spreadsheet would run as a formula (=, +, -, @), since team and player
+// names are typed by users.
+export function csvCell(value) {
+    let s = value == null ? '' : String(value);
+    if (/^[=+\-@\t\r]/.test(s)) {
+        s = "'" + s;
+    }
+    return /[",\r\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+}
+
+export function toCsv(rows) {
+    return rows.map((r) => r.map(csvCell).join(',')).join('\r\n') + '\r\n';
+}
+
+// "Willamette University" -> "willamette-university" for file names.
+export function slug(s) {
+    return String(s || '').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40);
+}
+
 export function escapeHtml(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({
         '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',

@@ -34,7 +34,13 @@
   </div>
 
   <section class="card">
-    <h2>All subs</h2>
+    <div class="card-head">
+      <h2>All subs</h2>
+      <div class="row">
+        <button id="print" class="small" type="button" disabled>Print</button>
+        <button id="export" class="small" type="button" disabled>Export CSV</button>
+      </div>
+    </div>
     <table class="log">
       <thead><tr><th>TOD</th><th>Clock</th><th>Team</th><th>In</th><th>Out</th></tr></thead>
       <tbody id="log"></tbody>
@@ -42,6 +48,8 @@
     <p id="log-empty" class="muted">No subs yet.</p>
   </section>
 </main>
+<!-- Filled just before printing; the only thing that prints. -->
+<section id="print-sheet" class="print-only" aria-hidden="true"></section>
 <script type="module" src="js/view.js"></script>
 </body>
 </html>

@@ -80,6 +80,14 @@ export function divisionLabel(division) {
 // Executed subs: newest time of day first, then away before home, then
 // queue order.
 const TEAM_ORDER = { away: 0, home: 1 };
+export function doneOldestFirst(subs) {
+    return subs
+        .filter((s) => s.status === 'done')
+        .map((s, i) => ({ s, i, t: s.executedAt ? s.executedAt.toMillis() : Infinity }))
+        .sort((a, b) => (a.t - b.t) || (TEAM_ORDER[a.s.team] - TEAM_ORDER[b.s.team]) || (a.i - b.i))
+        .map((x) => x.s);
+}
+
 export function doneNewestFirst(subs) {
     return subs
         .filter((s) => s.status === 'done')

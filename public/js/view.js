@@ -1,7 +1,7 @@
 // Press box viewer: read-only, no login, updates live.
 import { watchGame, watchSubs } from './store.js';
-import { escapeHtml, playerLabel } from './lib.js';
-import { applyTeamColors, glanceCard, teamName, divisionLabel, doneNewestFirst, timeOfDay, minuteLabel } from './render.js';
+import { escapeHtml, playerLabel, toCsv, slug } from './lib.js';
+import { applyTeamColors, glanceCard, teamName, divisionLabel, doneNewestFirst, doneOldestFirst, timeOfDay, minuteLabel } from './render.js';
 
 const $ = (id) => document.getElementById(id);
 const gameId = new URLSearchParams(location.search).get('g') || '';
@@ -79,6 +79,7 @@ function render() {
           <td>${escapeHtml(playerLabel(s.playerOut))}</td>
         </tr>`).join('');
     $('log-empty').classList.toggle('hidden', done.length > 0);
+    $('print').disabled = $('export').disabled = done.length === 0;
 
     // Latest = every sub from the most recent stoppage (one execute tap).
     const latestBatch = done.length ? done[0].batchId : null;
@@ -105,3 +106,72 @@ function render() {
     }
     shownBatch = latestBatch;
 }
+
+// --- print and CSV export (oldest first) ---
+
+function gameDate() {
+    return game && game.createdAt ? game.createdAt.toDate() : new Date();
+}
+
+function buildPrintSheet() {
+    if (!game) {
+        return;
+    }
+    const done = doneOldestFirst(subs);
+    $('print-sheet').innerHTML = `
+        <h1>${escapeHtml(teamName(game, 'home'))} vs ${escapeHtml(teamName(game, 'away'))}</h1>
+        <p>${escapeHtml(divisionLabel(game.division))} · ${escapeHtml(gameDate().toLocaleDateString([], { dateStyle: 'long' }))}
+           · Substitutions: ${done.length}</p>
+        <table>
+          <thead><tr><th>#</th><th>TOD</th><th>Clock</th><th>Team</th><th>In</th><th>Out</th></tr></thead>
+          <tbody>${done.map((s, i) => `
+            <tr>
+              <td>${i + 1}</td>
+              <td>${escapeHtml(timeOfDay(s))}</td>
+              <td>${minuteLabel(s)}</td>
+              <td>${escapeHtml(teamName(game, s.team))} (${s.team === 'home' ? 'H' : 'A'})</td>
+              <td>${escapeHtml(playerLabel(s.playerIn))}</td>
+              <td>${escapeHtml(playerLabel(s.playerOut))}</td>
+            </tr>`).join('')}</tbody>
+        </table>
+        <p class="printed">Printed ${escapeHtml(new Date().toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }))}</p>`;
+}
+
+// Ctrl+P / the browser's print menu also get an up-to-date sheet.
+window.addEventListener('beforeprint', buildPrintSheet);
+$('print').addEventListener('click', () => {
+    buildPrintSheet();
+    window.print();
+});
+
+const pad = (n) => String(n).padStart(2, '0');
+const isoDate = (d) => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+
+$('export').addEventListener('click', () => {
+    if (!game) {
+        return;
+    }
+    const rows = [['Date', 'TOD', 'Clock', 'Team', 'Home/Away', 'In #', 'In name', 'Out #', 'Out name']];
+    doneOldestFirst(subs).forEach((s) => {
+        const t = s.executedAt ? s.executedAt.toDate() : null;
+        rows.push([
+            t ? isoDate(t) : '',
+            t ? pad(t.getHours()) + ':' + pad(t.getMinutes()) + ':' + pad(t.getSeconds()) : '',
+            s.minute || '',
+            teamName(game, s.team),
+            s.team === 'home' ? 'Home' : 'Away',
+            s.playerIn.number, s.playerIn.name,
+            s.playerOut.number, s.playerOut.name,
+        ]);
+    });
+    const name = ['subs', slug(teamName(game, 'home')), 'vs', slug(teamName(game, 'away')), isoDate(gameDate())].join('-') + '.csv';
+    // BOM so Excel reads accented names as UTF-8.
+    const blob = new Blob(['﻿' + toCsv(rows)], { type: 'text/csv;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+});
