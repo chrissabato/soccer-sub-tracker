@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
     generateCode, normalizeCode, CODE_PATTERN, normalizeMinute, formatClockDigits, minuteSortValue,
-    season, guessRosterUrls, parsePasteList, byNumber, normalizeColor, contrastText, csvCell, toCsv, slug,
+    season, guessRosterUrls, parsePasteList, byNumber, normalizeColor, contrastText, csvCell, toCsv, slug, rankByName,
 } from '../public/js/lib.js';
 
 test('generated codes match the pattern the rules enforce', () => {
@@ -135,4 +135,16 @@ test('slug', () => {
     assert.equal(slug('Willamette University'), 'willamette-university');
     assert.equal(slug("Saint Mary's (Calif.)"), 'saint-mary-s-calif');
     assert.equal(slug('Universidad de Bogotá'), 'universidad-de-bogota');
+});
+
+test('rankByName: prefix, then word start, then anywhere', () => {
+    const items = ['Wisconsin Lutheran College', 'University of Wisconsin-Whitewater', 'Willamette University',
+        'Edgewood College', 'Ohio Wesleyan University', 'Whitworth University'].map((name) => ({ name }));
+    const names = (q) => rankByName(items, q).map((x) => x.name);
+    assert.deepEqual(names('wi'), ['Willamette University', 'Wisconsin Lutheran College', 'University of Wisconsin-Whitewater']);
+    assert.deepEqual(names('WHIT'), ['Whitworth University', 'University of Wisconsin-Whitewater']);
+    assert.deepEqual(names('wood'), ['Edgewood College']);
+    assert.deepEqual(names('  '), []);
+    assert.deepEqual(names('(x'), []); // regex characters are literal
+    assert.equal(rankByName(items, 'u', undefined, 2).length, 2);
 });

@@ -2,7 +2,8 @@ import { requireEditor } from './gate.js';
 import { getCode, updateGame, saveRoster, watchGame, watchRosters, team } from './store.js';
 import { applyTeamColors } from './render.js';
 import { rememberGame } from './recent.js';
-import { loadSchools, fillDatalist, findSchool } from './schools.js';
+import { loadSchools, findSchool, schoolSuggestions } from './schools.js';
+import { attachAutocomplete } from './autocomplete.js';
 import { fetchFirstRoster } from './roster-import.js';
 import { guessRosterUrls, parsePasteList, byNumber, escapeHtml } from './lib.js';
 
@@ -16,7 +17,6 @@ const editors = {}; // side -> roster editor
 
 loadSchools().then((list) => {
     schools = list;
-    fillDatalist($('schools'), list);
     if (game) {
         SIDES.forEach((side) => editors[side].setTeam(game[side], game.division));
     }
@@ -97,6 +97,7 @@ async function saveGame(fields) {
 
 $('division').addEventListener('change', () => saveGame({ division: $('division').value }));
 $('sub-order').addEventListener('change', () => saveGame({ subOrder: $('sub-order').value }));
+SIDES.forEach((side) => attachAutocomplete($(side + '-name'), schoolSuggestions(() => schools)));
 SIDES.forEach((side) => {
     $(side + '-name').addEventListener('change', (e) => {
         const school = findSchool(schools, e.target.value);

@@ -174,6 +174,29 @@ export function toCsv(rows) {
     return rows.map((r) => r.map(csvCell).join(',')).join('\r\n') + '\r\n';
 }
 
+// Name matches for a typed query, best first: names starting with it, then
+// a word in the name starting with it, then anywhere. `key(item)` gives the
+// name. Case-insensitive; at most `limit`.
+export function rankByName(items, query, key = (x) => x.name, limit = 8) {
+    const q = String(query || '').trim().toLowerCase();
+    if (!q) {
+        return [];
+    }
+    const wordStart = new RegExp('(^|[^a-z0-9])' + q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+    const scored = [];
+    items.forEach((item) => {
+        const name = String(key(item) || '').toLowerCase();
+        const score = name.startsWith(q) ? 0 : wordStart.test(name) ? 1 : name.includes(q) ? 2 : -1;
+        if (score >= 0) {
+            scored.push({ item, score, name });
+        }
+    });
+    return scored
+        .sort((a, b) => (a.score - b.score) || a.name.localeCompare(b.name))
+        .slice(0, limit)
+        .map((x) => x.item);
+}
+
 // "Willamette University" -> "willamette-university" for file names.
 export function slug(s) {
     return String(s || '').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '')

@@ -1,11 +1,13 @@
 import { createGame, joinWithCode, team } from './store.js';
-import { loadSchools, fillDatalist, findSchool } from './schools.js';
+import { loadSchools, findSchool, schoolSuggestions } from './schools.js';
+import { attachAutocomplete } from './autocomplete.js';
 import { recentGames, forgetGame } from './recent.js';
 import { escapeHtml } from './lib.js';
 import { divisionLabel } from './render.js';
 
 const $ = (id) => document.getElementById(id);
 let schools = [];
+['home', 'away'].forEach((id) => attachAutocomplete($(id), schoolSuggestions(() => schools)));
 
 function renderRecent() {
     const games = recentGames();
@@ -47,7 +49,6 @@ if (location.hash === '#join') {
 
 loadSchools().then((list) => {
     schools = list;
-    fillDatalist($('schools'), list);
 });
 
 $('join').addEventListener('submit', async (e) => {

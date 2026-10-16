@@ -1,3 +1,5 @@
+import { rankByName } from './lib.js';
+
 // School names for team-name autocomplete, from
 // github.com/chrissabato/college-athletics-directory. Cached per browser
 // for a week; if both the cache and the network fail, autocomplete is
@@ -47,16 +49,13 @@ function readCache() {
     }
 }
 
-// Fills a <datalist> with school names.
-export function fillDatalist(datalist, schools) {
-    const frag = document.createDocumentFragment();
-    schools.forEach((s) => {
-        const opt = document.createElement('option');
-        opt.value = s.name;
-        opt.label = [s.association, s.state].filter(Boolean).join(' · ');
-        frag.appendChild(opt);
-    });
-    datalist.replaceChildren(frag);
+// Suggestion-list settings for a school-name input (see autocomplete.js).
+export function schoolSuggestions(getSchools) {
+    return {
+        items: getSchools,
+        match: (schools, q) => rankByName(schools, q),
+        render: (s) => ({ label: s.name, detail: [s.association, s.state].filter(Boolean).join(' · ') }),
+    };
 }
 
 export function findSchool(schools, name) {
