@@ -52,6 +52,27 @@ export function subCard(sub, game, opts = {}) {
       </div>`;
 }
 
+// Viewer card built for a glance from the stat table: "6 for 10" in big
+// green/red numbers, names small underneath. opts.team: show the team badge
+// (off in the per-team pending panels, whose heading already names it).
+export function glanceCard(sub, game, opts = { team: true }) {
+    const side = (p, io, label) => `
+        <div class="glance-player io-${io}">
+          <span class="glance-label">${label}</span>
+          <span class="glance-num">${p && p.number ? escapeHtml(p.number) : '—'}</span>
+          <span class="glance-name" title="${escapeHtml(p && p.name ? p.name : '')}">${escapeHtml(p && p.name ? p.name : '')}</span>
+        </div>`;
+    return `
+      <div class="glance team-${sub.team}">
+        ${opts.team ? `<span class="team-tag">${escapeHtml(teamName(game, sub.team))}</span>` : ''}
+        <div class="glance-swap">
+          ${side(sub.playerIn, 'in', 'IN')}
+          <span class="glance-for">for</span>
+          ${side(sub.playerOut, 'out', 'OUT')}
+        </div>
+      </div>`;
+}
+
 export function divisionLabel(division) {
     return division === 'mens' ? "Men's soccer" : "Women's soccer";
 }

@@ -321,8 +321,43 @@ body.viewer main { max-width: 1280px; }
     to { box-shadow: 0 0 10px 3px var(--neon-glow), 0 0 40px 10px var(--neon-glow); }
 }
 .latest h2 { font-size: 15px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
-.latest .sub { background: transparent; font-size: 22px; padding: 6px 12px; }
-.latest .sub .in::before, .latest .sub .out::before { font-size: 15px; }
+/* Glance cards: "6 for 10" readable from across the press box */
+.glance {
+    border-left: 6px solid var(--team);
+    background: var(--surface-2);
+    border-radius: 8px;
+    padding: 10px 16px 12px;
+    margin-bottom: 10px;
+}
+.glance-swap { display: flex; align-items: flex-end; gap: 18px; flex-wrap: wrap; margin-top: 6px; }
+.glance-player { display: flex; flex-direction: column; align-items: center; min-width: 3ch; }
+.glance-label { font-size: 13px; font-weight: 800; letter-spacing: .08em; color: var(--io); }
+.glance-num {
+    font-size: 56px;
+    line-height: 1;
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+    color: var(--io);
+}
+.glance-name {
+    font-size: 14px;
+    color: var(--muted);
+    max-width: 12em;
+    min-height: 1.4em;
+    text-align: center;
+    /* One line, so long names can't push the numbers out of line. */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.glance-for { font-size: 18px; font-weight: 600; color: var(--muted); padding-bottom: 26px; }
+#latest-subs { display: flex; flex-wrap: wrap; gap: 8px 40px; }
+.latest .glance { background: transparent; border-left-width: 8px; margin-bottom: 0; }
+.latest .glance-num { font-size: 88px; }
+.latest .glance-label { font-size: 15px; }
+.latest .glance-for { font-size: 24px; padding-bottom: 30px; }
+.latest .glance-name { font-size: 16px; }
+.latest .glance-swap { gap: 28px; }
 @media (prefers-reduced-motion: reduce) {
     .latest.lit.pulse { animation: none; }
 }

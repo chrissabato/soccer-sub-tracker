@@ -1,7 +1,7 @@
 // Press box viewer: read-only, no login, updates live.
 import { watchGame, watchSubs } from './store.js';
 import { escapeHtml, playerLabel } from './lib.js';
-import { applyTeamColors, subCard, teamName, divisionLabel, doneNewestFirst, timeOfDay, minuteLabel } from './render.js';
+import { applyTeamColors, glanceCard, teamName, divisionLabel, doneNewestFirst, timeOfDay, minuteLabel } from './render.js';
 
 const $ = (id) => document.getElementById(id);
 const gameId = new URLSearchParams(location.search).get('g') || '';
@@ -65,7 +65,7 @@ function render() {
     }
     ['home', 'away'].forEach((side) => {
         const pending = subs.filter((s) => s.status === 'pending' && s.team === side);
-        $('pending-' + side).innerHTML = pending.map((s) => subCard(s, game)).join('');
+        $('pending-' + side).innerHTML = pending.map((s) => glanceCard(s, game, { team: false })).join('');
         $('pending-' + side + '-empty').classList.toggle('hidden', pending.length > 0);
     });
 
@@ -86,7 +86,7 @@ function render() {
     $('latest').classList.toggle('hidden', latest.length === 0);
     if (latest.length) {
         $('latest-title').textContent = (latest.length === 1 ? 'Latest sub' : 'Latest subs') + ' · ' + latest[0].minute + (latest[0].minute.includes(':') ? '' : '’');
-        $('latest-subs').innerHTML = latest.map((s) => subCard(s, game)).join('');
+        $('latest-subs').innerHTML = latest.map((s) => glanceCard(s, game)).join('');
     }
     if (!subsLoaded) {
         return;
