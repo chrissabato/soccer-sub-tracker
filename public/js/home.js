@@ -51,6 +51,18 @@ loadSchools().then((list) => {
     schools = list;
 });
 
+// Sport toggle (Women's / Men's) feeds the hidden #division field.
+document.querySelector('.sport-toggle').addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-division]');
+    if (!b) {
+        return;
+    }
+    $('division').value = b.dataset.division;
+    document.querySelectorAll('.sport-toggle button').forEach((x) => {
+        x.setAttribute('aria-pressed', String(x === b));
+    });
+});
+
 $('join').addEventListener('submit', async (e) => {
     e.preventDefault();
     const button = e.submitter;

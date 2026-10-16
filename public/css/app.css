@@ -171,6 +171,7 @@ button.big { width: 100%; min-height: 56px; font-size: 18px; }
 .segmented { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
 .segmented button { border: 0; border-radius: 0; background: var(--surface); min-height: 48px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .segmented button[aria-pressed="true"] { background: var(--team); color: var(--team-text); }
+.sport-toggle button[aria-pressed="true"] { background: var(--accent); color: var(--accent-text); }
 
 .team-field { display: flex; gap: 8px; align-items: center; }
 .team-field input[type="color"] {
