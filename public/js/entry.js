@@ -194,9 +194,19 @@ function pickPlayer(field) {
     $('picker-context').innerHTML = hasOther
         ? `<span class="io-badge io-${isIn ? 'out' : 'in'}">${isIn ? 'OUT' : 'IN'}</span> ${escapeHtml(playerLabel(other))}`
         : '';
-    $('picker-filter').value = '';
+    // No roster for this team: the only way to pick is typing a number, so
+    // focus the box with the phone's number pad. With a roster, leave the
+    // keyboard down so the player grid stays visible.
+    const noRoster = !(rosters[form.team] || []).length;
+    const filter = $('picker-filter');
+    filter.value = '';
+    filter.inputMode = noRoster ? 'numeric' : 'text';
+    filter.placeholder = noRoster ? 'Type the jersey number' : 'Type a number or name';
     renderPicker();
     $('picker').showModal();
+    if (noRoster) {
+        filter.focus();
+    }
 }
 
 function renderPicker() {
