@@ -401,3 +401,7 @@ body.viewer main { max-width: 1280px; }
     .share-panel + .share-panel { border-left: 0; border-top: 1px solid var(--border); }
     .share-entry { flex-direction: column; align-items: flex-start; }
 }
+
+/* Game log page */
+.table-scroll { overflow-x: auto; }
+.game-log td.when { white-space: nowrap; font-variant-numeric: tabular-nums; }

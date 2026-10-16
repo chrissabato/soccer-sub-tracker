@@ -25,8 +25,11 @@ beforeEach(() => env.clearFirestore());
 
 const as = (uid) => (uid ? env.authenticatedContext(uid) : env.unauthenticatedContext()).firestore();
 
-function createBatch(db, uid, gid = 'g1', code = CODE) {
+function createBatch(db, uid, gid = 'g1', code = CODE, log = null) {
     const b = writeBatch(db);
+    if (log) {
+        b.set(doc(db, 'gameLog', gid), { createdAt: serverTimestamp(), division: 'womens', home: 'Home U', away: 'Away U', ...log });
+    }
     b.set(doc(db, 'games', gid), {
         home: team('Home U'), away: team('Away U'), division: 'womens',
         createdAt: serverTimestamp(), creatorUid: uid,
@@ -168,4 +171,48 @@ test('after 72 hours an unauthenticated client can clean up everything', async (
     await assertSucceeds(deleteDoc(doc(db, 'games', 'g1', 'secret', 'code')));
     await assertSucceeds(deleteDoc(doc(db, 'codes', CODE)));
     await assertSucceeds(deleteDoc(doc(db, 'games', 'g1')));
+});
+
+// --- permanent game log ---
+
+test('game log is written with the game and is public', async () => {
+    await assertSucceeds(createBatch(as('u1'), 'u1', 'g1', CODE, {}).commit());
+    await assertSucceeds(getDoc(doc(as(null), 'gameLog', 'g1')));
+    await assertSucceeds(getDocs(collection(as(null), 'gameLog')));
+});
+
+test('game log must match the game and cannot exist on its own', async () => {
+    await assertFails(createBatch(as('u1'), 'u1', 'g1', CODE, { home: 'Someone Else' }).commit());
+    await assertFails(setDoc(doc(as('u1'), 'gameLog', 'nogame'), {
+        createdAt: serverTimestamp(), division: 'womens', home: 'A', away: 'B',
+    }));
+});
+
+test('editors keep the log in step; others cannot touch it', async () => {
+    await seed();
+    let created;
+    await env.withSecurityRulesDisabled(async (ctx) => {
+        created = (await getDoc(doc(ctx.firestore(), 'games', 'g1'))).data().createdAt;
+    });
+    const sync = (db, home, createdAt = created) => {
+        const b = writeBatch(db);
+        b.update(doc(db, 'games', 'g1'), { home: team(home) });
+        b.set(doc(db, 'gameLog', 'g1'), { createdAt, division: 'mens', home, away: 'A' });
+        return b.commit();
+    };
+    // Back-fill for a game created before the log existed, then update.
+    await assertSucceeds(sync(as('creator'), 'Renamed'));
+    await assertSucceeds(sync(as('creator'), 'Renamed Again'));
+    await assertFails(sync(as('creator'), 'Bad Date', Timestamp.fromMillis(0)));
+    await assertFails(sync(as('outsider'), 'Hijack'));
+});
+
+test('game log is never deleted, even after 72 hours', async () => {
+    const old = Timestamp.fromMillis(Date.now() - 73 * 3600 * 1000);
+    await seed({ createdAt: old });
+    await env.withSecurityRulesDisabled(async (ctx) => {
+        await setDoc(doc(ctx.firestore(), 'gameLog', 'g1'), { createdAt: old, division: 'mens', home: 'H', away: 'A' });
+    });
+    await assertFails(deleteDoc(doc(as(null), 'gameLog', 'g1')));
+    await assertFails(deleteDoc(doc(as('creator'), 'gameLog', 'g1')));
 });

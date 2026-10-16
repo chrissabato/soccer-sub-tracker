@@ -57,6 +57,38 @@ service cloud.firestore {
         && (d.batchId == null || (d.batchId is string && d.batchId.size() <= 40));
     }
 
+    // Permanent log of games (when, sport, teams): public, never deleted,
+    // not touched by the 72-hour cleanup.
+    function validLog(d) {
+      return d.keys().hasOnly(['createdAt', 'division', 'home', 'away'])
+        && d.division in ['mens', 'womens']
+        && d.home is string && d.home.size() <= 120
+        && d.away is string && d.away.size() <= 120;
+    }
+
+    function matchesGame(d, gid) {
+      let g = getAfter(gamePath(gid)).data;
+      return d.division == g.division && d.home == g.home.name && d.away == g.away.name;
+    }
+
+    match /gameLog/{gid} {
+      allow read: if true;
+      allow create, update: if validLog(request.resource.data)
+        && matchesGame(request.resource.data, gid)
+        && (
+          // In the game's creation batch.
+          (signedIn()
+            && !exists(gamePath(gid))
+            && getAfter(gamePath(gid)).data.creatorUid == request.auth.uid
+            && request.resource.data.createdAt == request.time)
+          // Kept in step by an editor (also back-fills games created before
+          // the log existed).
+          || (isEditor(gid)
+            && exists(gamePath(gid))
+            && request.resource.data.createdAt == get(gamePath(gid)).data.createdAt)
+        );
+    }
+
     match /codes/{code} {
       allow get: if true;
       // Created in the same batch as the game; must point at a game whose

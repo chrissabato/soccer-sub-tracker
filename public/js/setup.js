@@ -82,7 +82,7 @@ watchRosters(gameId, (rosters) => {
 async function saveGame(fields) {
     $('game-status').textContent = 'Saving…';
     try {
-        await updateGame(gameId, fields);
+        await updateGame(gameId, fields, game);
         $('game-status').textContent = 'Saved.';
     } catch (err) {
         $('game-status').textContent = 'Could not save: ' + err.message;

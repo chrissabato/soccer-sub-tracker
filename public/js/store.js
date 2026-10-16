@@ -2,7 +2,7 @@
 // enforced by firestore.rules; keep the two in step.
 import {
     doc, collection, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot,
-    writeBatch, serverTimestamp, query, orderBy,
+    writeBatch, serverTimestamp, query, orderBy, getDocs, limit,
 } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 import { db, currentUser } from './firebase.js';
 import { generateCode, normalizeCode, normalizeColor } from './lib.js';
@@ -13,6 +13,13 @@ const editorRef = (gid, uid) => doc(db, 'games', gid, 'editors', uid);
 const rosterRef = (gid, side) => doc(db, 'games', gid, 'rosters', side);
 const subsCol = (gid) => collection(db, 'games', gid, 'subs');
 const codeRef = (code) => doc(db, 'codes', code);
+const logRef = (gid) => doc(db, 'gameLog', gid);
+
+// The permanent game log (kept after the 72-hour cleanup): just when, what
+// and who played. Mirrors the game's current sport and team names.
+function logEntry(createdAt, game) {
+    return { createdAt, division: game.division, home: game.home.name, away: game.away.name };
+}
 
 export function team(name = '', url = '', color = '') {
     const t = { name: String(name).trim().slice(0, 120), url: String(url).trim().slice(0, 300) };
@@ -41,6 +48,7 @@ export async function createGame({ home, away, division }) {
         batch.set(secretRef(ref.id), { code });
         batch.set(codeRef(code), { gameId: ref.id });
         batch.set(editorRef(ref.id, user.uid), { code });
+        batch.set(logRef(ref.id), logEntry(serverTimestamp(), { home, away, division }));
         await batch.commit();
         return { gameId: ref.id, code };
     }
@@ -86,8 +94,19 @@ export async function getCode(gameId) {
     return snap.exists() ? snap.data().code : '';
 }
 
-export function updateGame(gameId, fields) {
-    return updateDoc(gameRef(gameId), fields);
+// Updates sport/teams and keeps the game log entry in step. `current` is
+// the game as last read (for createdAt and the fields not being changed).
+export function updateGame(gameId, fields, current) {
+    const batch = writeBatch(db);
+    batch.update(gameRef(gameId), fields);
+    batch.set(logRef(gameId), logEntry(current.createdAt, { ...current, ...fields }));
+    return batch.commit();
+}
+
+// The whole game log, newest first.
+export async function listGameLog() {
+    const snap = await getDocs(query(collection(db, 'gameLog'), orderBy('createdAt', 'desc'), limit(1000)));
+    return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 }
 
 export function saveRoster(gameId, side, players, sourceUrl = '') {

@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Game Log</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%E2%9A%BD%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="../css/app.css">
+</head>
+<body>
+<header class="bar">
+  <h1>Game log</h1>
+  <nav><a href="../">Home</a></nav>
+</header>
+<main>
+  <section class="card">
+    <p id="summary" class="muted">Loading…</p>
+    <p id="error" class="error" role="alert"></p>
+    <div class="table-scroll">
+      <table class="game-log hidden" id="table">
+        <thead><tr><th>Created</th><th>Sport</th><th>Home</th><th>Away</th><th></th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+<script type="module" src="../js/games.js"></script>
+</body>
+</html>
