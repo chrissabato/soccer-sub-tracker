@@ -67,7 +67,7 @@ export function glanceCard(sub, game, opts = { team: true }) {
         ${opts.team ? `<span class="team-tag">${escapeHtml(teamName(game, sub.team))}</span>` : ''}
         <div class="glance-swap">
           ${side(sub.playerIn, 'in', 'IN')}
-          <span class="glance-for">for</span>
+          <span class="glance-for" role="img" aria-label="for">⇄</span>
           ${side(sub.playerOut, 'out', 'OUT')}
         </div>
       </div>`;

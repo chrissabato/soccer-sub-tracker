@@ -350,7 +350,7 @@ body.viewer main { max-width: 1280px; }
     overflow: hidden;
     text-overflow: ellipsis;
 }
-.glance-for { font-size: 18px; font-weight: 600; color: var(--muted); padding-bottom: 26px; }
+.glance-for { font-size: 32px; line-height: 1; color: var(--muted); padding-bottom: 30px; }
 /* Equal-width cards, as many per row as fit; inside each, IN and OUT get
    equal halves so the numbers line up from card to card. */
 #latest-subs {
@@ -364,7 +364,7 @@ body.viewer main { max-width: 1280px; }
 .latest .glance { background: transparent; border-left-width: 8px; margin-bottom: 0; }
 .latest .glance-num { font-size: 88px; }
 .latest .glance-label { font-size: 15px; }
-.latest .glance-for { font-size: 24px; padding-bottom: 30px; }
+.latest .glance-for { font-size: 44px; padding-bottom: 38px; }
 .latest .glance-name { font-size: 16px; }
 .latest .glance-swap { gap: 28px; }
 @media (prefers-reduced-motion: reduce) {
