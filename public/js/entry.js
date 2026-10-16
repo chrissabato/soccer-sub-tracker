@@ -8,8 +8,6 @@ const $ = (id) => document.getElementById(id);
 
 const gameId = await requireEditor();
 $('app').classList.remove('hidden');
-$('nav-setup').href = 'setup.html?g=' + encodeURIComponent(gameId);
-$('nav-view').href = 'view.html?g=' + encodeURIComponent(gameId);
 
 let game = null;
 let rosters = { home: [], away: [] };
