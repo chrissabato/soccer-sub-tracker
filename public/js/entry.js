@@ -39,7 +39,7 @@ watchGame(gameId, (g) => {
         outRow.before(inRow);
     }
     document.querySelectorAll('.add-team').forEach((b) => {
-        b.textContent = '+ ' + teamName(g, b.dataset.team) + ' sub';
+        b.textContent = teamName(g, b.dataset.team);
     });
     render();
 }, showError);
