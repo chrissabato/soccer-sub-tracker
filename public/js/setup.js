@@ -40,19 +40,27 @@ getCode(gameId).then((code) => {
     }
     if (code) {
         // Same link as the QR: opens sub entry already unlocked.
-        const link = entryUrl + '#code=' + code;
-        $('open-entry').href = link;
-        $('copy-entry').disabled = false;
-        $('copy-entry').addEventListener('click', async () => {
-            try {
-                await navigator.clipboard.writeText(link);
-                $('copy-entry').textContent = 'Copied';
-            } catch (err) {
-                $('copy-entry').textContent = 'Copy failed';
-            }
-            setTimeout(() => { $('copy-entry').textContent = 'Copy link'; }, 1500);
-        });
+        $('open-entry').href = entryUrl + '#code=' + code;
+        document.querySelector('[data-target="open-entry"]').disabled = false;
     }
+});
+
+// Copy icons next to Monitor / PA / Sub entry copy that button's link and
+// flash a checkmark.
+document.querySelectorAll('.copy-link').forEach((b) => {
+    b.addEventListener('click', async () => {
+        try {
+            await navigator.clipboard.writeText($(b.dataset.target).href);
+            b.classList.add('copied');
+            b.title = 'Copied';
+        } catch (err) {
+            b.title = 'Copy failed';
+        }
+        setTimeout(() => {
+            b.classList.remove('copied');
+            b.title = b.getAttribute('aria-label');
+        }, 1500);
+    });
 });
 
 SIDES.forEach((side) => { editors[side] = new RosterEditor(side); });

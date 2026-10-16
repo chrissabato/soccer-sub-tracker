@@ -637,3 +637,11 @@ body.landing main { max-width: 1100px; }
 .home-link:hover, .home-link:focus-visible { background: var(--surface-2); }
 .pa-head .home-link { margin-right: 4px; }
 .pa-head > .pa-title { flex: 1; min-width: 0; }
+
+/* Setup share buttons: [link text][copy icon] */
+.link-group { display: flex; min-width: 0; }
+.link-group > a { flex: 1; min-width: 0; white-space: nowrap; }
+.link-group > .copy-link { flex: none; padding: 10px 12px; border-left: 1px solid color-mix(in srgb, var(--accent-text) 35%, transparent); }
+.copy-link .icon-check { display: none; }
+.copy-link.copied .icon-copy { display: none; }
+.copy-link.copied .icon-check { display: block; }
