@@ -139,7 +139,7 @@ button, .button {
 button:disabled { opacity: .5; cursor: default; }
 button.primary, .button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
 button.danger { color: var(--danger); }
-button.small { min-height: 36px; padding: 6px 10px; font-size: 14px; }
+button.small, .button.small { min-height: 36px; padding: 6px 10px; font-size: 14px; }
 button.big { width: 100%; min-height: 56px; font-size: 18px; }
 
 .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
@@ -433,3 +433,18 @@ body.viewer main { max-width: 1280px; }
     #print-sheet .printed { margin-top: 8pt; font-size: 7.5pt; color: #555; }
     @page { margin: 12mm; }
 }
+
+/* Home: recent games */
+.recent-list { list-style: none; margin: 0; padding: 0; }
+.recent-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 12px;
+    flex-wrap: wrap;
+    padding: 10px 0;
+    border-top: 1px solid var(--border);
+}
+.recent-list li:first-child { border-top: 0; padding-top: 0; }
+.recent-info { display: flex; flex-direction: column; min-width: 0; }
+.recent-actions { display: flex; gap: 6px; flex-wrap: wrap; }

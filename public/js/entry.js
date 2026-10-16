@@ -2,6 +2,7 @@ import { requireEditor } from './gate.js';
 import { watchGame, watchRosters, watchSubs, addSub, editSub, cancelSub, executeSubs } from './store.js';
 import { normalizeMinute, formatClockDigits, playerLabel, byNumber, escapeHtml } from './lib.js';
 import { applyTeamColors, subCard, teamName, doneNewestFirst } from './render.js';
+import { rememberGame } from './recent.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -25,6 +26,7 @@ watchGame(gameId, (g) => {
         return;
     }
     game = g;
+    rememberGame(gameId, g);
     applyTeamColors(g);
     $('title').textContent = teamName(g, 'home') + ' vs ' + teamName(g, 'away');
     document.querySelectorAll('#team-toggle button').forEach((b) => {

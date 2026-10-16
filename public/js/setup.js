@@ -1,6 +1,7 @@
 import { requireEditor } from './gate.js';
 import { getCode, updateGame, saveRoster, watchGame, watchRosters, team } from './store.js';
 import { applyTeamColors } from './render.js';
+import { rememberGame } from './recent.js';
 import { loadSchools, fillDatalist, findSchool } from './schools.js';
 import { fetchFirstRoster } from './roster-import.js';
 import { guessRosterUrls, parsePasteList, byNumber, escapeHtml } from './lib.js';
@@ -56,6 +57,7 @@ watchGame(gameId, (g) => {
         return;
     }
     game = g;
+    rememberGame(gameId, g);
     $('title').textContent = (g.home.name || 'Home') + ' vs ' + (g.away.name || 'Away');
     document.title = 'Setup: ' + $('title').textContent;
     applyTeamColors(g);
