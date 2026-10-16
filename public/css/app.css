@@ -621,3 +621,19 @@ body.landing main { max-width: 1100px; }
 .ac-list li.active, .ac-list li:hover { background: var(--surface-2); }
 .ac-label { font-weight: 600; }
 .ac-detail { font-size: 13px; color: var(--muted); }
+
+/* Home icon at the left of each page's header */
+.home-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    margin: -8px 0 -8px -8px;
+    border-radius: 8px;
+    color: var(--text);
+    flex: none;
+}
+.home-link:hover, .home-link:focus-visible { background: var(--surface-2); }
+.pa-head .home-link { margin-right: 4px; }
+.pa-head > .pa-title { flex: 1; min-width: 0; }
