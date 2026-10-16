@@ -28,8 +28,8 @@ $('app').classList.remove('hidden');
 const base = new URL('.', location.href);
 const entryUrl = new URL('entry.html?g=' + encodeURIComponent(gameId), base).href;
 const viewUrl = new URL('view.html?g=' + encodeURIComponent(gameId), base).href;
-$('nav-entry').href = entryUrl;
-$('nav-view').href = $('open-view').href = viewUrl;
+$('open-view').href = viewUrl;
+$('open-entry').href = entryUrl;
 $('open-pa').href = new URL('pa.html?g=' + encodeURIComponent(gameId), base).href;
 getCode(gameId).then((code) => {
     $('code').textContent = code || '??????';
@@ -41,6 +41,7 @@ getCode(gameId).then((code) => {
     if (code) {
         // Same link as the QR: opens sub entry already unlocked.
         const link = entryUrl + '#code=' + code;
+        $('open-entry').href = link;
         $('copy-entry').disabled = false;
         $('copy-entry').addEventListener('click', async () => {
             try {
