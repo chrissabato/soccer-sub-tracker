@@ -31,6 +31,7 @@ const viewUrl = new URL('view.html?g=' + encodeURIComponent(gameId), base).href;
 $('open-view').href = viewUrl;
 $('open-entry').href = entryUrl;
 $('open-pa').href = new URL('pa.html?g=' + encodeURIComponent(gameId), base).href;
+$('open-gfx').href = new URL('gfx.html?g=' + encodeURIComponent(gameId), base).href;
 getCode(gameId).then((code) => {
     $('code').textContent = code || '??????';
     // The entry QR carries the code after '#' (never sent to the server), so
@@ -45,7 +46,7 @@ getCode(gameId).then((code) => {
     }
 });
 
-// Copy icons next to Monitor / PA / Sub entry copy that button's link and
+// Copy icons next to Monitor / PA / Broadcast GFX / Sub entry copy that button's link and
 // flash a checkmark.
 document.querySelectorAll('.copy-link').forEach((b) => {
     b.addEventListener('click', async () => {

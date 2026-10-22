@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Broadcast GFX</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%E2%9A%BD%3C/text%3E%3C/svg%3E">
+<!-- Broadcast overlay for OBS / vMix browser sources. Transparent page;
+     sized in vw so it scales with the source (built for 1920x1080). Doesn't
+     use app.css: no page background, no dark mode. -->
+<style>
+:root {
+    --home: #1d4ed8;
+    --home-text: #ffffff;
+    --away: #c62828;
+    --away-text: #ffffff;
+    --io-in: #0b8a5f;
+    --io-out: #c0261b;
+    --panel: rgba(16, 19, 24, .92);
+    --font: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+    color-scheme: normal;
+}
+html, body {
+    margin: 0;
+    background: transparent;
+    overflow: hidden;
+    font-family: var(--font);
+}
+.hidden { display: none !important; }
+.team-home { --team: var(--home); --team-text: var(--home-text); }
+.team-away { --team: var(--away); --team-text: var(--away-text); }
+
+/* Lower third, bottom left. */
+.gfx {
+    position: fixed;
+    left: 4.5vw;
+    bottom: 7vw;
+    min-width: 30vw;
+    max-width: 55vw;
+    color: #fff;
+    font-size: 1vw;
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path .45s cubic-bezier(.2, .8, .2, 1);
+}
+.gfx.show { clip-path: inset(0 0 0 0); }
+.gfx-head {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+    padding: .55em 1.1em;
+    background: var(--team);
+    color: var(--team-text);
+    font-weight: 800;
+    font-size: 1.35em;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+}
+.gfx-team { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gfx-label, .gfx-meta { font-size: .8em; opacity: .85; white-space: nowrap; }
+.gfx-body { background: var(--panel); border-left: .5em solid var(--team); }
+.gfx-line {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+    padding: .55em 1.1em;
+    font-size: 2.1em;
+}
+.gfx-line + .gfx-line { border-top: 1px solid rgba(255, 255, 255, .12); }
+.gfx-io {
+    width: 3.2em;
+    padding: .2em 0;
+    border-radius: .25em;
+    text-align: center;
+    font-size: .55em;
+    font-weight: 800;
+    letter-spacing: .08em;
+}
+.io-in .gfx-io { background: var(--io-in); }
+.io-out .gfx-io { background: var(--io-out); }
+.gfx-num { min-width: 1.6em; text-align: right; font-weight: 800; font-variant-numeric: tabular-nums; }
+.gfx-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+.io-out .gfx-name, .io-out .gfx-num { opacity: .75; }
+
+/* Problems only show on screen when opened with &debug. */
+.msg {
+    position: fixed;
+    top: 1vw;
+    left: 1vw;
+    padding: .5em .8em;
+    background: rgba(0, 0, 0, .75);
+    color: #fff;
+    font: 600 14px/1.3 var(--font);
+}
+</style>
+</head>
+<body>
+<div id="gfx" class="gfx" aria-live="polite">
+  <div class="gfx-head">
+    <span class="gfx-label">Substitution</span>
+    <span id="gfx-team" class="gfx-team"></span>
+    <span id="gfx-meta" class="gfx-meta"></span>
+  </div>
+  <div id="gfx-body" class="gfx-body"></div>
+</div>
+<p id="msg" class="msg hidden"></p>
+<script type="module" src="js/gfx.js"></script>
+</body>
+</html>
