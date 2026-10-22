@@ -113,7 +113,7 @@ html, body {
 }
 .gfx-line {
     display: grid;
-    grid-template-columns: 2.4em 4.4em 1fr;
+    grid-template-columns: 3em 4.4em 1fr;
     align-items: center;
     column-gap: 1.1em;
     padding: .5em 1.6em .5em 1em;
@@ -122,10 +122,21 @@ html, body {
     transition: opacity .3s ease, transform .4s var(--ease);
 }
 .gfx-line + .gfx-line { border-top: 1px solid rgba(255, 255, 255, .08); }
-.gfx-io { display: flex; justify-content: center; }
+/* Chevrons drawn bigger than their cell, which crops them: fills the row
+   height edge to edge (negative margin cancels the row padding). */
+.gfx-io {
+    position: relative;
+    align-self: stretch;
+    margin: -.5em 0;
+    overflow: hidden;
+}
 .gfx-io svg {
-    width: 2em;
-    height: 2.5em;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 4.8em;
+    height: 6em;
     fill: none;
     stroke: currentColor;
     stroke-width: 3.5;
