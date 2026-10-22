@@ -56,7 +56,6 @@ function fill(s, index, total) {
     const gfx = $('gfx');
     gfx.classList.toggle('team-home', s.team === 'home');
     gfx.classList.toggle('team-away', s.team === 'away');
-    $('gfx-team').textContent = teamName(game, s.team);
     $('gfx-clock').innerHTML = minuteLabel(s);
     // One dot per sub in this stoppage, the current one filled. Kept when
     // only the current one moves, so the fill can animate across.
@@ -81,6 +80,7 @@ async function play() {
     playing = true;
     const gfx = $('gfx');
     let first = true;
+    let team = null;
     while (queue.length) {
         const { sub, index, total } = queue.shift();
         if (first) {
@@ -93,13 +93,16 @@ async function play() {
             first = false;
         } else {
             gfx.style.setProperty('--row-delay', '0s');
+            // A different team also wipes the team block out and back in.
+            gfx.classList.toggle('swap-team', sub.team !== team);
             gfx.classList.add('swap');
             await wait(SWAP_OUT_MS);
             fill(sub, index, total);
             await frames();
-            gfx.classList.remove('swap');
+            gfx.classList.remove('swap', 'swap-team');
             await wait(SWAP_IN_MS + SHOW_MS);
         }
+        team = sub.team;
     }
     gfx.classList.remove('show');
     await wait(OUT_MS + GAP_MS);
@@ -159,6 +162,8 @@ if (!gameId) {
         }
         game = g;
         applyTeamColors(g);
+        $('gfx-team-home').textContent = teamName(g, 'home');
+        $('gfx-team-away').textContent = teamName(g, 'away');
         document.title = 'GFX: ' + teamName(g, 'home') + ' vs ' + teamName(g, 'away');
         onSubs();
     }, (err) => message('Live updates stopped: ' + (err.message || err)));

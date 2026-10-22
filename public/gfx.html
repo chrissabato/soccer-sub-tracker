@@ -58,8 +58,8 @@ html, body {
     transition: clip-path .5s var(--ease) .25s;
 }
 .gfx-team {
-    transition: background-color .3s, color .3s;
-    display: flex;
+    transition: clip-path .3s var(--ease);
+    display: grid;
     align-items: center;
     padding: 0 1.1em 0 .9em;
     background: var(--team);
@@ -70,9 +70,11 @@ html, body {
     text-transform: uppercase;
     white-space: nowrap;
     max-width: 22em;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
+/* Both names share one cell so the block is always as wide as the longer
+   one, and nothing beside it shifts when the team changes. */
+.gfx-team span { grid-area: 1 / 1; overflow: hidden; text-overflow: ellipsis; }
+.team-home .gfx-team-away, .team-away .gfx-team-home { visibility: hidden; }
 .gfx-strip {
     flex: 1;
     display: flex;
@@ -181,6 +183,9 @@ html, body {
 .gfx.show .gfx-line + .gfx-line { transition-delay: calc(var(--row-delay, .5s) + .12s); }
 /* Next sub in the same showing: rows slip out, the frame stays up. */
 .gfx.show.swap .gfx-line { opacity: 0; transform: translateX(-1.5em); transition-delay: 0s; }
+/* ...and on a team change the team block wipes out, recolors while hidden,
+   and wipes back in. */
+.gfx.show.swap-team .gfx-team { clip-path: inset(0 100% 0 0); }
 
 /* Problems only show on screen when opened with &debug. */
 .msg {
@@ -198,7 +203,7 @@ html, body {
 <body>
 <div id="gfx" class="gfx team-home" aria-live="polite">
   <div class="gfx-head">
-    <span id="gfx-team" class="gfx-team"></span>
+    <span class="gfx-team"><span id="gfx-team-home" class="gfx-team-home"></span><span id="gfx-team-away" class="gfx-team-away"></span></span>
     <span class="gfx-strip">
       <span class="gfx-label">Substitution</span>
       <span id="gfx-clock" class="gfx-clock"></span>
