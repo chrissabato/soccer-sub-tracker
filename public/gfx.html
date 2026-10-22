@@ -58,6 +58,7 @@ html, body {
     transition: clip-path .5s var(--ease) .25s;
 }
 .gfx-team {
+    transition: background-color .3s, color .3s;
     display: flex;
     align-items: center;
     padding: 0 1.1em 0 .9em;
@@ -95,6 +96,7 @@ html, body {
 }
 .gfx-dots { display: flex; gap: .35em; }
 .gfx-dots i {
+    transition: background-color .3s;
     width: .55em;
     height: .55em;
     border-radius: 50%;
@@ -106,8 +108,8 @@ html, body {
 .gfx-body {
     background: linear-gradient(var(--panel-top), var(--panel-bottom));
     border-left: .4em solid var(--team);
+    transition: clip-path .45s var(--ease) 0s, border-color .3s;
     clip-path: inset(0 0 100% 0);
-    transition: clip-path .45s var(--ease) 0s;
 }
 .gfx-line {
     display: grid;
@@ -120,11 +122,27 @@ html, body {
     transition: opacity .3s ease, transform .4s var(--ease);
 }
 .gfx-line + .gfx-line { border-top: 1px solid rgba(255, 255, 255, .08); }
-.gfx-io { display: flex; flex-direction: column; align-items: center; line-height: 1; }
-.gfx-io svg { width: 1.6em; height: 1.6em; }
-.gfx-io b { font-size: .95em; font-weight: 700; letter-spacing: .12em; }
+.gfx-io { display: flex; justify-content: center; }
+.gfx-io svg {
+    width: 2em;
+    height: 2.5em;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 3.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
 .io-in .gfx-io { color: var(--in); }
-.io-out .gfx-io { color: var(--out); }
+.io-out .gfx-io { color: var(--out); transform: scaleY(-1); }
+/* Chevrons light bottom to top (OUT is flipped, so top to bottom). */
+.gfx-io polyline { opacity: .2; animation: chevron 1.2s ease-in-out infinite; }
+.gfx-io polyline:nth-child(3) { animation-delay: 0s; }
+.gfx-io polyline:nth-child(2) { animation-delay: .2s; }
+.gfx-io polyline:nth-child(1) { animation-delay: .4s; }
+@keyframes chevron {
+    0%, 70%, 100% { opacity: .2; }
+    30% { opacity: 1; }
+}
 .gfx-num {
     font-weight: 800;
     font-size: 3em;
@@ -147,9 +165,11 @@ html, body {
 /* In: header wipes right, body drops open, rows slide in one by one.
    Out (no .show): the reverse, faster. */
 .gfx.show .gfx-head { clip-path: inset(0 0 0 0); transition-delay: 0s; }
-.gfx.show .gfx-body { clip-path: inset(0 0 0 0); transition-delay: .3s; }
-.gfx.show .gfx-line { opacity: 1; transform: none; transition-delay: .5s; }
-.gfx.show .gfx-line + .gfx-line { transition-delay: .62s; }
+.gfx.show .gfx-body { clip-path: inset(0 0 0 0); transition-delay: .3s, 0s; }
+.gfx.show .gfx-line { opacity: 1; transform: none; transition-delay: var(--row-delay, .5s); }
+.gfx.show .gfx-line + .gfx-line { transition-delay: calc(var(--row-delay, .5s) + .12s); }
+/* Next sub in the same showing: rows slip out, the frame stays up. */
+.gfx.show.swap .gfx-line { opacity: 0; transform: translateX(-1.5em); transition-delay: 0s; }
 
 /* Problems only show on screen when opened with &debug. */
 .msg {
@@ -165,7 +185,7 @@ html, body {
 </style>
 </head>
 <body>
-<div id="gfx" class="gfx" aria-live="polite">
+<div id="gfx" class="gfx team-home" aria-live="polite">
   <div class="gfx-head">
     <span id="gfx-team" class="gfx-team"></span>
     <span class="gfx-strip">

@@ -17,6 +17,8 @@ const gameId = params.get('g') || '';
 const SHOW_MS = Math.min(Math.max(Number(params.get('s')) || 5, 1), 60) * 1000;
 const IN_MS = 900; // the staged entrance in gfx.html
 const OUT_MS = 800; // the exit (reverse)
+const SWAP_OUT_MS = 300; // rows fading out before the next sub in the same showing
+const SWAP_IN_MS = 500; // and the next sub's rows sliding in
 const GAP_MS = 250;
 const testMode = params.has('test');
 const debug = params.has('debug');
@@ -35,48 +37,72 @@ function message(text) {
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-// Up arrow for IN, down for OUT.
-const ARROW = {
-    in: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4 21 15H15V20H9V15H3Z" fill="currentColor"/></svg>',
-    out: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20 3 9H9V4H15V9H21Z" fill="currentColor"/></svg>',
-};
+// Three stacked chevrons that light up in turn (CSS): pointing up and
+// flowing upward for IN, down for OUT.
+const CHEVRONS = '<svg viewBox="0 0 24 30" aria-hidden="true">'
+    + [4, 12, 20].map((y) => `<polyline points="4,${y + 7} 12,${y - 1} 20,${y + 7}"/>`).join('')
+    + '</svg>';
 
 function line(p, io, label) {
     return `
       <div class="gfx-line io-${io}">
-        <span class="gfx-io">${ARROW[io]}<b>${label}</b></span>
+        <span class="gfx-io" role="img" aria-label="${label}">${CHEVRONS}</span>
         <span class="gfx-num">${p && p.number ? escapeHtml(p.number) : ''}</span>
         <span class="gfx-name">${escapeHtml(p && p.name ? p.name : '')}</span>
       </div>`;
 }
 
 function fill(s, index, total) {
-    $('gfx').className = 'gfx team-' + s.team;
+    const gfx = $('gfx');
+    gfx.classList.toggle('team-home', s.team === 'home');
+    gfx.classList.toggle('team-away', s.team === 'away');
     $('gfx-team').textContent = teamName(game, s.team);
     $('gfx-clock').innerHTML = minuteLabel(s);
-    // One dot per sub in this stoppage, the current one filled.
-    $('gfx-dots').innerHTML = total > 1
-        ? Array.from({ length: total }, (_, i) => `<i class="${i === index ? 'on' : ''}"></i>`).join('')
-        : '';
+    // One dot per sub in this stoppage, the current one filled. Kept when
+    // only the current one moves, so the fill can animate across.
+    const dots = $('gfx-dots');
+    const count = total > 1 ? total : 0;
+    if (dots.children.length !== count) {
+        dots.innerHTML = '<i></i>'.repeat(count);
+    }
+    [...dots.children].forEach((d, i) => d.classList.toggle('on', i === index));
     $('gfx-body').innerHTML = inOutOrder(game, line(s.playerIn, 'in', 'IN'), line(s.playerOut, 'out', 'OUT')).join('');
 }
 
-// Plays queued subs one at a time: animate in, hold, animate out.
+const frames = () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+// Plays queued subs: the graphic animates in once, each sub holds for
+// SHOW_MS (later ones swap in place: rows out, rows in), then it animates
+// out once the queue is empty.
 async function play() {
     if (playing) {
         return;
     }
     playing = true;
+    const gfx = $('gfx');
+    let first = true;
     while (queue.length) {
         const { sub, index, total } = queue.shift();
-        fill(sub, index, total);
-        // Two frames so the entrance starts from the hidden state.
-        await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
-        $('gfx').classList.add('show');
-        await wait(IN_MS + SHOW_MS);
-        $('gfx').classList.remove('show');
-        await wait(OUT_MS + GAP_MS);
+        if (first) {
+            gfx.style.removeProperty('--row-delay');
+            fill(sub, index, total);
+            // Two frames so the entrance starts from the hidden state.
+            await frames();
+            gfx.classList.add('show');
+            await wait(IN_MS + SHOW_MS);
+            first = false;
+        } else {
+            gfx.style.setProperty('--row-delay', '0s');
+            gfx.classList.add('swap');
+            await wait(SWAP_OUT_MS);
+            fill(sub, index, total);
+            await frames();
+            gfx.classList.remove('swap');
+            await wait(SWAP_IN_MS + SHOW_MS);
+        }
     }
+    gfx.classList.remove('show');
+    await wait(OUT_MS + GAP_MS);
     playing = false;
     if (testMode) {
         queueTest();
@@ -95,6 +121,10 @@ function queueTest() {
         team: 'home', minute: '67:23',
         playerIn: { number: '10', name: 'Sample Player' },
         playerOut: { number: '7', name: 'Another Player' },
+    }, {
+        team: 'away', minute: '67:23',
+        playerIn: { number: '22', name: 'Second Sample' },
+        playerOut: { number: '4', name: 'Fourth Player' },
     }];
     setTimeout(() => enqueue(last), queue.length || playing ? 0 : 1000);
 }
