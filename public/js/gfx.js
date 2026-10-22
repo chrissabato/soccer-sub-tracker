@@ -15,7 +15,8 @@ const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);
 const gameId = params.get('g') || '';
 const SHOW_MS = Math.min(Math.max(Number(params.get('s')) || 5, 1), 60) * 1000;
-const WIPE_MS = 450; // matches the .gfx clip-path transition
+const IN_MS = 900; // the staged entrance in gfx.html
+const OUT_MS = 800; // the exit (reverse)
 const GAP_MS = 250;
 const testMode = params.has('test');
 const debug = params.has('debug');
@@ -34,10 +35,16 @@ function message(text) {
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+// Up arrow for IN, down for OUT.
+const ARROW = {
+    in: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4 21 15H15V20H9V15H3Z" fill="currentColor"/></svg>',
+    out: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20 3 9H9V4H15V9H21Z" fill="currentColor"/></svg>',
+};
+
 function line(p, io, label) {
     return `
       <div class="gfx-line io-${io}">
-        <span class="gfx-io">${label}</span>
+        <span class="gfx-io">${ARROW[io]}<b>${label}</b></span>
         <span class="gfx-num">${p && p.number ? escapeHtml(p.number) : ''}</span>
         <span class="gfx-name">${escapeHtml(p && p.name ? p.name : '')}</span>
       </div>`;
@@ -46,12 +53,15 @@ function line(p, io, label) {
 function fill(s, index, total) {
     $('gfx').className = 'gfx team-' + s.team;
     $('gfx-team').textContent = teamName(game, s.team);
-    $('gfx-meta').innerHTML = [minuteLabel(s), total > 1 ? (index + 1) + '/' + total : '']
-        .filter(Boolean).join(' · ');
+    $('gfx-clock').innerHTML = minuteLabel(s);
+    // One dot per sub in this stoppage, the current one filled.
+    $('gfx-dots').innerHTML = total > 1
+        ? Array.from({ length: total }, (_, i) => `<i class="${i === index ? 'on' : ''}"></i>`).join('')
+        : '';
     $('gfx-body').innerHTML = inOutOrder(game, line(s.playerIn, 'in', 'IN'), line(s.playerOut, 'out', 'OUT')).join('');
 }
 
-// Plays queued subs one at a time: wipe in, hold, wipe out.
+// Plays queued subs one at a time: animate in, hold, animate out.
 async function play() {
     if (playing) {
         return;
@@ -60,12 +70,12 @@ async function play() {
     while (queue.length) {
         const { sub, index, total } = queue.shift();
         fill(sub, index, total);
-        // Two frames so the wipe starts from the hidden state.
+        // Two frames so the entrance starts from the hidden state.
         await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
         $('gfx').classList.add('show');
-        await wait(WIPE_MS + SHOW_MS);
+        await wait(IN_MS + SHOW_MS);
         $('gfx').classList.remove('show');
-        await wait(WIPE_MS + GAP_MS);
+        await wait(OUT_MS + GAP_MS);
     }
     playing = false;
     if (testMode) {
