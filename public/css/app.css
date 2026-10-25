@@ -658,3 +658,25 @@ body.landing main { max-width: 1100px; }
 .copy-link .icon-check { display: none; }
 .copy-link.copied .icon-copy { display: none; }
 .copy-link.copied .icon-check { display: block; }
+
+/* Feedback widget (feedback.chrissabato.com/widget.js). Its variables
+   inherit into the widget, so pointing them at our tokens keeps it in
+   step with light/dark mode. */
+:root {
+    --fb-accent: var(--accent);
+    --fb-accent-text: var(--accent-text);
+    --fb-bg: var(--surface);
+    --fb-text: var(--text);
+    --fb-muted: var(--muted);
+    --fb-border: var(--border);
+    --fb-input-bg: var(--surface);
+    --fb-error: var(--danger);
+    --fb-backdrop: rgba(0, 0, 0, .5);
+    --fb-font: var(--font);
+    --fb-radius: var(--radius);
+    --fb-control-radius: 8px;
+    --fb-launcher-radius: 8px;
+    --fb-width: 560px;
+}
+/* Clear the fixed execute bar on the entry page. */
+body.entry { --fb-offset-y: 96px; }
