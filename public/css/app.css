@@ -227,7 +227,8 @@ td.del { width: 44px; }
     color: var(--team-text);
     overflow-wrap: anywhere;
 }
-body.entry main { padding-bottom: 96px; }
+/* Clear the fixed execute bar; the footer is the last thing on the page. */
+body.entry .site-footer { padding-bottom: 96px; }
 .execute-bar {
     position: fixed;
     left: 0; right: 0; bottom: 0;
@@ -678,23 +679,24 @@ body.landing main { max-width: 1100px; }
     --fb-launcher-radius: 8px;
     --fb-width: 560px;
 }
-/* Clear the fixed execute bar on the entry page. */
-body.entry { --fb-offset-y: 96px; }
-/* Keep the launcher quiet: a small outlined chip rather than a solid
-   accent button, tucked tighter into the corner on phones. */
-[data-feedback-widget]::part(launcher) {
-    background: var(--surface);
+/* The widget's launcher is off (data-button="false"); a footer link
+   opens it instead. */
+.site-footer {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 8px 16px 24px;
+    text-align: center;
+}
+.site-footer .link {
+    background: none;
+    border: 0;
+    padding: 8px;
+    min-height: 0;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 400;
     color: var(--muted);
-    border: 1px solid var(--border);
-    box-shadow: none;
-    padding: 6px 10px;
-    font-size: 12px;
-    font-weight: 500;
-    opacity: .8;
+    text-decoration: underline;
+    cursor: pointer;
 }
-[data-feedback-widget]::part(launcher):hover { opacity: 1; color: var(--text); }
-@media (max-width: 640px) {
-    :root { --fb-offset-x: 8px; --fb-offset-y: 8px; }
-    body.entry { --fb-offset-y: 88px; }
-    [data-feedback-widget]::part(launcher) { padding: 4px 8px; font-size: 11px; }
-}
+.site-footer .link:hover { color: var(--text); }
