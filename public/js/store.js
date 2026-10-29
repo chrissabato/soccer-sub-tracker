@@ -182,7 +182,8 @@ export function editSub(gameId, subId, { team: side, playerIn, playerOut, minute
     return updateDoc(doc(subsCol(gameId), subId), fields);
 }
 
-export function cancelSub(gameId, subId) {
+// Cancels a pending sub, or removes an executed one from the log.
+export function deleteSub(gameId, subId) {
     return deleteDoc(doc(subsCol(gameId), subId));
 }
 

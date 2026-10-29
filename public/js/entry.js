@@ -1,5 +1,5 @@
 import { requireEditor } from './gate.js';
-import { watchGame, watchRosters, watchSubs, addSub, editSub, cancelSub, executeSubs } from './store.js';
+import { watchGame, watchRosters, watchSubs, addSub, editSub, deleteSub, executeSubs } from './store.js';
 import { normalizeMinute, formatClockDigits, playerLabel, byNumber, escapeHtml } from './lib.js';
 import { applyTeamColors, subCard, teamName, doneNewestFirst, outFirst } from './render.js';
 import { rememberGame } from './recent.js';
@@ -78,6 +78,8 @@ function subById(id) {
     return subs.find((s) => s.id === id);
 }
 
+const subSummary = (sub) => teamName(game, sub.team) + ': ' + playerLabel(sub.playerIn) + ' for ' + playerLabel(sub.playerOut);
+
 function onListClick(e) {
     const button = e.target.closest('button[data-act]');
     if (!button) {
@@ -90,8 +92,8 @@ function onListClick(e) {
     if (button.dataset.act === 'edit') {
         openSubDialog(sub);
     } else if (button.dataset.act === 'cancel') {
-        if (confirm('Cancel this sub?\n' + teamName(game, sub.team) + ': ' + playerLabel(sub.playerIn) + ' for ' + playerLabel(sub.playerOut))) {
-            cancelSub(gameId, sub.id).catch(showError);
+        if (confirm('Cancel this sub?\n' + subSummary(sub))) {
+            deleteSub(gameId, sub.id).catch(showError);
         }
     } else if (button.dataset.act === 'execute') {
         openMinuteDialog([sub]);
@@ -115,6 +117,7 @@ function openSubDialog(sub, side = 'home') {
         : { sub: null, team: side, playerIn: null, playerOut: null };
     $('sub-title').textContent = sub ? 'Edit sub' : 'Add sub';
     $('sub-save').textContent = sub ? 'Save' : 'Queue sub';
+    $('sub-delete').classList.toggle('hidden', !sub);
     const isDone = sub && sub.status === 'done';
     $('minute-row').classList.toggle('hidden', !isDone);
     setClock($('edit-minute'), isDone ? (sub.minute || '') : '');
@@ -151,6 +154,16 @@ $('team-toggle').addEventListener('click', (e) => {
 $('pick-out').addEventListener('click', () => pickPlayer('playerOut'));
 $('pick-in').addEventListener('click', () => pickPlayer('playerIn'));
 $('sub-cancel').addEventListener('click', () => $('sub-dialog').close());
+$('sub-delete').addEventListener('click', () => {
+    const sub = form.sub;
+    const what = sub.status === 'done' ? 'Delete this sub from the log?' : 'Delete this sub?';
+    if (!confirm(what + '\n' + subSummary(sub))) {
+        return;
+    }
+    // Like saving, don't wait for the server.
+    deleteSub(gameId, sub.id).catch((err) => showError(new Error('A sub was not deleted: ' + err.message)));
+    $('sub-dialog').close();
+});
 
 $('sub-save').addEventListener('click', async () => {
     const has = (p) => p && (p.number || p.name);

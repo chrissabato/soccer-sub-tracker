@@ -276,6 +276,7 @@ dialog::backdrop { background: rgba(0, 0, 0, .5); }
 dialog h2 { margin-bottom: 8px; }
 dialog h2:focus { outline: none; }
 dialog .footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+#sub-delete { margin-right: auto; }
 /* IN / OUT emphasis in the sub dialog and player picker */
 .io-in { --io: var(--io-in); --io-text: var(--io-in-text); }
 .io-out { --io: var(--io-out); --io-text: var(--io-out-text); }
