@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<!-- Soccer ball logo, drawn for this site. -->
+<style>.b{fill:#0b6e4f;stroke:#0b6e4f}@media (prefers-color-scheme:dark){.b{fill:#2fb985;stroke:#2fb985}}</style>
+<defs><clipPath id="c"><circle cx="256" cy="256" r="232"/></clipPath></defs>
+<g class="b">
+<g clip-path="url(#c)" stroke-width="16" stroke-linejoin="round" stroke-linecap="round">
+<path d="M256.0 182.0 L326.4 233.1 L299.5 315.9 L212.5 315.9 L185.6 233.1Z M256.0 110.0 L193.2 64.4 L217.2 -9.4 L294.8 -9.4 L318.8 64.4Z M394.9 210.9 L418.8 137.1 L496.4 137.1 L520.4 210.9 L457.6 256.5Z M341.8 374.1 L419.4 374.1 L443.4 447.9 L380.6 493.5 L317.8 447.9Z M170.2 374.1 L194.2 447.9 L131.4 493.5 L68.6 447.9 L92.6 374.1Z M117.1 210.9 L54.4 256.5 L-8.4 210.9 L15.6 137.1 L93.2 137.1Z"/>
+<path fill="none" d="M256.0 182.0 L256.0 110.0 M193.2 64.4 L229.7 -14.7 M318.8 64.4 L282.3 -14.7 M326.4 233.1 L394.9 210.9 M418.8 137.1 L505.4 147.4 M457.6 256.5 L521.6 197.3 M299.5 315.9 L341.8 374.1 M419.4 374.1 L436.4 459.6 M317.8 447.9 L393.9 490.5 M212.5 315.9 L170.2 374.1 M194.2 447.9 L118.1 490.5 M92.6 374.1 L75.6 459.6 M185.6 233.1 L117.1 210.9 M54.4 256.5 L-9.6 197.3 M93.2 137.1 L6.6 147.4"/>
+</g>
+<circle cx="256" cy="256" r="232" fill="none" stroke-width="24"/>
+</g>
+</svg>
+
