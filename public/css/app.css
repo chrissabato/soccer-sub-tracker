@@ -680,3 +680,21 @@ body.landing main { max-width: 1100px; }
 }
 /* Clear the fixed execute bar on the entry page. */
 body.entry { --fb-offset-y: 96px; }
+/* Keep the launcher quiet: a small outlined chip rather than a solid
+   accent button, tucked tighter into the corner on phones. */
+[data-feedback-widget]::part(launcher) {
+    background: var(--surface);
+    color: var(--muted);
+    border: 1px solid var(--border);
+    box-shadow: none;
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: 500;
+    opacity: .8;
+}
+[data-feedback-widget]::part(launcher):hover { opacity: 1; color: var(--text); }
+@media (max-width: 640px) {
+    :root { --fb-offset-x: 8px; --fb-offset-y: 8px; }
+    body.entry { --fb-offset-y: 88px; }
+    [data-feedback-widget]::part(launcher) { padding: 4px 8px; font-size: 11px; }
+}
