@@ -1,9 +1,11 @@
 // Service worker: makes the site installable and lets pages load from
 // cache when the field's connection drops. Network-first, so a deploy is
 // picked up on the next online load; the cache is only a fallback.
+// Apache sends no Cache-Control, so the browser's HTTP cache would guess a
+// lifetime and serve stale CSS/JS; every fetch here revalidates instead.
 // Live game data goes through Firestore, which this never touches.
 
-const CACHE = 'soccersubs-v1';
+const CACHE = 'soccersubs-v2';
 
 // Warmed on install so the installed app opens offline even before these
 // have been visited. A missing file (e.g. config.js locally) is skipped.
@@ -21,7 +23,7 @@ const FIREBASE_SDK = 'https://www.gstatic.com/firebasejs/';
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE)
-            .then((cache) => Promise.allSettled(SHELL.map((url) => cache.add(url))))
+            .then((cache) => Promise.allSettled(SHELL.map((url) => cache.add(new Request(url, { cache: 'no-cache' })))))
             .then(() => self.skipWaiting())
     );
 });
@@ -56,7 +58,7 @@ self.addEventListener('fetch', (event) => {
 async function networkFirst(req) {
     const cache = await caches.open(CACHE);
     try {
-        const res = await fetch(req);
+        const res = await fetch(req, { cache: 'no-cache' });
         if (res.ok) {
             cache.put(req, res.clone());
         }
