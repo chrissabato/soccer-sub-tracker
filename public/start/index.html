@@ -17,16 +17,12 @@
 </header>
 <main>
   <section class="card">
-    <h2>Enter a game code</h2>
-    <form id="join" class="row" autocomplete="off">
-      <input id="code" name="code" placeholder="ABC234" maxlength="8" autocapitalize="characters" spellcheck="false" aria-label="Game code" required>
-      <button class="primary" type="submit">Go</button>
-    </form>
-    <p id="join-error" class="error" role="alert"></p>
-  </section>
+    <div class="tabs" role="tablist" aria-label="Start">
+      <button type="button" role="tab" id="tab-create" aria-controls="panel-create" aria-selected="true">New game</button>
+      <button type="button" role="tab" id="tab-join" aria-controls="panel-join" aria-selected="false" tabindex="-1">Enter a game code</button>
+    </div>
 
-  <section class="card">
-    <h2>New game</h2>
+    <div role="tabpanel" id="panel-create" aria-labelledby="tab-create">
     <form id="create" autocomplete="off">
       <label id="division-label">Sport</label>
       <div class="segmented sport-toggle" role="group" aria-labelledby="division-label">
@@ -42,6 +38,15 @@
       <p id="create-error" class="error" role="alert"></p>
       <p class="muted">You'll get a game code for the sub-entry phone and a viewer link for the press box. Games are deleted 72 hours after they're created.</p>
     </form>
+    </div>
+
+    <div role="tabpanel" id="panel-join" aria-labelledby="tab-join" hidden>
+    <form id="join" class="row" autocomplete="off">
+      <input id="code" name="code" placeholder="ABC234" maxlength="8" autocapitalize="characters" spellcheck="false" aria-label="Game code" required>
+      <button class="primary" type="submit">Go</button>
+    </form>
+    <p id="join-error" class="error" role="alert"></p>
+    </div>
   </section>
 
   <section id="recent" class="card hidden">

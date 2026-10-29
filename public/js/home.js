@@ -43,9 +43,32 @@ $('recent-list').addEventListener('click', (e) => {
 });
 renderRecent();
 
+// New game / Enter a game code tabs. Arrow keys move between tabs.
+const tabs = [...document.querySelectorAll('[role="tab"]')];
+function selectTab(tab) {
+    tabs.forEach((t) => {
+        const on = t === tab;
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;
+        $(t.getAttribute('aria-controls')).hidden = !on;
+    });
+}
+tabs.forEach((tab, i) => {
+    tab.addEventListener('click', () => selectTab(tab));
+    tab.addEventListener('keydown', (e) => {
+        const step = { ArrowRight: 1, ArrowLeft: -1 }[e.key];
+        if (step) {
+            const next = tabs[(i + step + tabs.length) % tabs.length];
+            selectTab(next);
+            next.focus();
+        }
+    });
+});
+
 // From the showcase's "Have a game code?" link. Deferred until after load:
 // the browser's own jump to #join would otherwise reset the focus.
 if (location.hash === '#join') {
+    selectTab($('tab-join'));
     window.addEventListener('load', () => setTimeout(() => $('code').focus(), 0));
 }
 

@@ -91,6 +91,27 @@ h2 { font-size: 17px; margin: 0 0 12px; }
     margin-bottom: 16px;
 }
 
+/* Tabs that sit across the top edge of a card. */
+.tabs {
+    display: flex;
+    margin: -16px -16px 16px;
+    border-bottom: 1px solid var(--border);
+}
+.tabs [role="tab"] {
+    flex: 1;
+    min-height: 48px;
+    border: 0;
+    border-bottom: 3px solid transparent;
+    border-radius: 0;
+    background: none;
+    color: var(--muted);
+}
+.tabs [role="tab"][aria-selected="true"] {
+    color: var(--text);
+    border-bottom-color: var(--accent);
+}
+.tabs [role="tab"]:hover { color: var(--text); }
+
 .game-row {
     display: grid;
     grid-template-columns: minmax(150px, auto) 1fr 1fr minmax(130px, auto);
