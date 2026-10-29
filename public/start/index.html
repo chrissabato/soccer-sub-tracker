@@ -16,11 +16,6 @@
   <h1><a class="brand" href="../">Soccer Sub Tracker</a></h1>
 </header>
 <main>
-  <section id="recent" class="card hidden">
-    <h2>Recent games</h2>
-    <ul id="recent-list" class="recent-list"></ul>
-  </section>
-
   <section class="card">
     <h2>Enter a game code</h2>
     <form id="join" class="row" autocomplete="off">
@@ -47,6 +42,11 @@
       <p id="create-error" class="error" role="alert"></p>
       <p class="muted">You'll get a game code for the sub-entry phone and a viewer link for the press box. Games are deleted 72 hours after they're created.</p>
     </form>
+  </section>
+
+  <section id="recent" class="card hidden">
+    <h2>Recent games</h2>
+    <ul id="recent-list" class="recent-list"></ul>
   </section>
 </main>
 <footer class="site-footer"><button type="button" class="link" onclick="FeedbackWidget.open()">Send feedback</button></footer>
