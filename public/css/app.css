@@ -50,6 +50,31 @@
     }
 }
 
+/* Dark mode switched on by hand (theme.js) on a light-mode browser. */
+:root[data-theme="dark"] {
+    --bg: #0f1216;
+    --surface: #181c22;
+    --surface-2: #222831;
+    --text: #e8ebef;
+    --muted: #9aa3b0;
+    --border: #313844;
+    --accent: #2fb985;
+    --accent-text: #06140f;
+    --home: #6b9bff;
+    --home-text: #000000;
+    --away: #f87171;
+    --away-text: #000000;
+    --danger: #ff6b5e;
+    --io-in: #2fb985;
+    --io-in-text: #06140f;
+    --io-out: #ff6b5e;
+    --io-out-text: #1a0503;
+    --neon: #39ff14;
+    --neon-glow: rgba(57, 255, 20, .5);
+    --neon-tint: #12240d;
+    color-scheme: dark;
+}
+
 * { box-sizing: border-box; }
 
 html, body { margin: 0; }
@@ -702,6 +727,24 @@ body.landing main { max-width: 1100px; }
     flex: none;
 }
 .home-link:hover, .home-link:focus-visible { background: var(--surface-2); }
+/* Dark mode switch (theme.js), only offered when the browser is light. */
+.theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    min-height: 0;
+    padding: 0;
+    margin-left: auto;
+    border: 0;
+    border-radius: 8px;
+    background: none;
+    color: var(--muted);
+    cursor: pointer;
+}
+.theme-toggle:hover, .theme-toggle:focus-visible { background: var(--surface-2); color: var(--text); }
+.theme-toggle[hidden] { display: none; }
 .pa-head .home-link { margin-right: 4px; }
 .pa-head > .pa-title { flex: 1; min-width: 0; }
 
