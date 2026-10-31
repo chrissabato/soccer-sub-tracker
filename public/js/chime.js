@@ -48,8 +48,11 @@ function tone(freq, start, length) {
     osc.stop(start + length + 0.05);
 }
 
-function play() {
-    if (!ctx || ctx.state !== 'running') {
+// A suspended context holds its clock still, so a chime scheduled during
+// a tap still plays once resume() takes effect. Otherwise only play when
+// running, so a chime isn't queued up and played late.
+function play(evenIfSuspended) {
+    if (!ctx || (ctx.state !== 'running' && !evenIfSuspended)) {
         return;
     }
     const t = ctx.currentTime;
@@ -87,7 +90,9 @@ function addSwitch() {
         }
         if (on) {
             // A short preview, so it's clear the sound works on this device.
-            unlock().then(play, () => {});
+            // Started inside the tap, which iOS needs to allow the sound.
+            unlock().catch(() => {});
+            play(true);
         }
         update();
     });
