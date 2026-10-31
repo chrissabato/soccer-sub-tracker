@@ -14,16 +14,28 @@ let shownBatch; // batch on screen; unset until the first subs snapshot
 let litTimer = null;
 const HIGHLIGHT_MS = 20000;
 
-// Neon highlight on the latest-sub box for `ms`, then it fades (CSS).
+// Neon highlight on the latest-sub box for `ms`, then the glow fades and
+// the whole box dims to 10% over a minute (CSS).
 function highlightLatest(ms) {
     const box = $('latest');
+    box.classList.remove('faded');
+    box.style.removeProperty('--fade-delay');
     box.classList.add('lit', 'pulse');
     clearTimeout(litTimer);
     litTimer = setTimeout(() => {
         // Stop the pulse first so the fade starts from the steady glow.
         box.classList.remove('pulse');
         requestAnimationFrame(() => requestAnimationFrame(() => box.classList.remove('lit')));
+        box.classList.add('faded');
     }, ms);
+}
+
+// Page opened after the highlight ended: pick the dim-out up where it
+// would be by now (a negative delay starts the transition part way in).
+function dimLatest(sinceHighlightEndMs) {
+    const box = $('latest');
+    box.style.setProperty('--fade-delay', (2000 - sinceHighlightEndMs) + 'ms');
+    requestAnimationFrame(() => box.classList.add('faded'));
 }
 
 function showError(err) {
@@ -103,6 +115,8 @@ function render() {
             const left = HIGHLIGHT_MS - (Date.now() - latest[0].executedAt.toMillis());
             if (left > 0) {
                 highlightLatest(left);
+            } else {
+                dimLatest(-left);
             }
         }
     }
