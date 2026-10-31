@@ -15,7 +15,7 @@ let litTimer = null;
 const HIGHLIGHT_MS = 20000;
 
 // Neon highlight on the latest-sub box for `ms`, then the glow fades and
-// the whole box dims to 10% over a minute (CSS).
+// the box contents dim to 10% over a minute (CSS).
 function highlightLatest(ms) {
     const box = $('latest');
     box.classList.remove('faded');

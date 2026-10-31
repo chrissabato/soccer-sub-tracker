@@ -40,7 +40,7 @@ function card(s) {
 }
 
 // Neon highlight on the Now section for `ms`, then the glow fades and
-// the whole section dims to 10% over a minute (CSS).
+// the section contents dim to 10% over a minute (CSS).
 function highlightNow(ms) {
     const box = $('now');
     box.classList.remove('faded');

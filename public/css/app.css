@@ -341,12 +341,12 @@ body.viewer main { max-width: 1280px; }
     /* Fade back to a plain card when .lit is removed. */
     transition: border-color 2s ease, box-shadow 2s ease, background-color 2s ease;
 }
-/* After the glow fades, dim the whole box to 10% over 60 s. Opacity is
-   only in this transition, so a new sub snaps it straight back to full. */
-.latest.faded {
+/* After the glow fades, dim the box's contents (not the card itself) to
+   10% over 60 s. Opacity is only in this transition, so a new sub snaps
+   them straight back to full. */
+.latest.faded > * {
     opacity: .1;
-    transition: border-color 2s ease, box-shadow 2s ease, background-color 2s ease,
-        opacity 60s linear var(--fade-delay, 2s);
+    transition: opacity 60s linear var(--fade-delay, 2s);
 }
 /* Neon highlight for 20 s after a new sub (see view.js). */
 .latest.lit {
@@ -553,11 +553,10 @@ body.pa-has-pending .pa-pending { flex: 2 1 0; }
     box-shadow: 0 0 6px 2px var(--neon-glow), 0 0 28px 6px var(--neon-glow);
 }
 .pa-now.lit.pulse { animation: neon-pulse 1.6s ease-in-out infinite alternate; }
-/* After the glow fades, dim the Now section to 10% over 60 s (as .latest). */
-.pa-now.faded {
+/* After the glow fades, dim the Now section's contents to 10% over 60 s (as .latest). */
+.pa-now.faded > * {
     opacity: .1;
-    transition: border-color 2s ease, box-shadow 2s ease, background-color 2s ease,
-        opacity 60s linear var(--fade-delay, 2s);
+    transition: opacity 60s linear var(--fade-delay, 2s);
 }
 @media (prefers-reduced-motion: reduce) {
     .pa-now.lit.pulse { animation: none; }
