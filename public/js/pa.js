@@ -39,15 +39,27 @@ function card(s) {
       </div>`;
 }
 
-// Neon highlight on the Now section for `ms`, then it fades (CSS).
+// Neon highlight on the Now section for `ms`, then the glow fades and
+// the whole section dims to 10% over a minute (CSS).
 function highlightNow(ms) {
     const box = $('now');
+    box.classList.remove('faded');
+    box.style.removeProperty('--fade-delay');
     box.classList.add('lit', 'pulse');
     clearTimeout(litTimer);
     litTimer = setTimeout(() => {
         box.classList.remove('pulse');
         requestAnimationFrame(() => requestAnimationFrame(() => box.classList.remove('lit')));
+        box.classList.add('faded');
     }, ms);
+}
+
+// Page opened after the highlight ended: pick the dim-out up where it
+// would be by now (a negative delay starts the transition part way in).
+function dimNow(sinceHighlightEndMs) {
+    const box = $('now');
+    box.style.setProperty('--fade-delay', (2000 - sinceHighlightEndMs) + 'ms');
+    requestAnimationFrame(() => box.classList.add('faded'));
 }
 
 function render() {
@@ -76,6 +88,8 @@ function render() {
             const left = HIGHLIGHT_MS - (Date.now() - latest[0].executedAt.toMillis());
             if (left > 0) {
                 highlightNow(left);
+            } else {
+                dimNow(-left);
             }
         }
     }

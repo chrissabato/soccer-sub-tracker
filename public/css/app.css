@@ -553,6 +553,12 @@ body.pa-has-pending .pa-pending { flex: 2 1 0; }
     box-shadow: 0 0 6px 2px var(--neon-glow), 0 0 28px 6px var(--neon-glow);
 }
 .pa-now.lit.pulse { animation: neon-pulse 1.6s ease-in-out infinite alternate; }
+/* After the glow fades, dim the Now section to 10% over 60 s (as .latest). */
+.pa-now.faded {
+    opacity: .1;
+    transition: border-color 2s ease, box-shadow 2s ease, background-color 2s ease,
+        opacity 60s linear var(--fade-delay, 2s);
+}
 @media (prefers-reduced-motion: reduce) {
     .pa-now.lit.pulse { animation: none; }
 }
