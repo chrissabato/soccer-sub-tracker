@@ -461,6 +461,8 @@ body.viewer main { max-width: 1280px; }
 /* Game log page */
 .table-scroll { overflow-x: auto; }
 .game-log td.when { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.game-log td.links { white-space: nowrap; }
+.game-log td.links a + a { margin-left: 12px; }
 
 /* Viewer: All subs header with Print / Export */
 .card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }

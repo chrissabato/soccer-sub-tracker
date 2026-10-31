@@ -1,6 +1,5 @@
-// Public list of every game ever created (the permanent game log). Sub
-// data is deleted after 72 hours; games still inside that window link to
-// their viewer.
+// Public list of games from the game log that are still live. Sub data is
+// deleted after 72 hours, so older games are left out.
 import { listGameLog } from './store.js';
 import { escapeHtml } from './lib.js';
 import { divisionLabel } from './render.js';
@@ -9,18 +8,19 @@ const $ = (id) => document.getElementById(id);
 const LIVE_MS = 72 * 3600 * 1000;
 
 try {
-    const games = await listGameLog();
     const now = Date.now();
+    const games = (await listGameLog())
+        .filter((g) => g.createdAt && now - g.createdAt.toMillis() < LIVE_MS);
     $('rows').innerHTML = games.map((g) => {
-        const created = g.createdAt ? g.createdAt.toDate() : null;
-        const live = created && now - created.getTime() < LIVE_MS;
+        const created = g.createdAt.toDate();
+        const q = '?g=' + encodeURIComponent(g.id);
         return `
           <tr>
-            <td class="when">${created ? escapeHtml(created.toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })) : ''}</td>
+            <td class="when">${escapeHtml(created.toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }))}</td>
             <td>${escapeHtml(divisionLabel(g.division))}</td>
             <td>${escapeHtml(g.home)}</td>
             <td>${escapeHtml(g.away)}</td>
-            <td>${live ? `<a href="../view.html?g=${encodeURIComponent(g.id)}">Viewer</a>` : ''}</td>
+            <td class="links"><a href="../view.html${q}">Viewer</a> <a href="../pa.html${q}">PA</a></td>
           </tr>`;
     }).join('');
     $('table').classList.toggle('hidden', games.length === 0);
