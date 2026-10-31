@@ -5,6 +5,7 @@ import { watchGame, watchSubs } from './store.js';
 import { escapeHtml } from './lib.js';
 import { applyTeamColors, teamName, doneNewestFirst, minuteLabel, inOutOrder, agoLabel } from './render.js';
 import { rememberGame } from './recent.js';
+import { chime } from './chime.js';
 
 const $ = (id) => document.getElementById(id);
 const gameId = new URLSearchParams(location.search).get('g') || '';
@@ -113,6 +114,7 @@ function render() {
     if (latestBatch && latestBatch !== shownBatch) {
         if (shownBatch !== undefined) {
             highlightNow(HIGHLIGHT_MS);
+            chime();
         } else if (latest[0].executedAt) {
             const left = HIGHLIGHT_MS - (Date.now() - latest[0].executedAt.toMillis());
             if (left > 0) {

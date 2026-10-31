@@ -728,7 +728,7 @@ body.landing main { max-width: 1100px; }
 }
 .home-link:hover, .home-link:focus-visible { background: var(--surface-2); }
 /* Dark mode switch (theme.js), only offered when the browser is light. */
-.theme-toggle {
+.theme-toggle, .sound-toggle {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -743,7 +743,11 @@ body.landing main { max-width: 1100px; }
     color: var(--muted);
     cursor: pointer;
 }
-.theme-toggle:hover, .theme-toggle:focus-visible { background: var(--surface-2); color: var(--text); }
+.theme-toggle:hover, .theme-toggle:focus-visible,
+.sound-toggle:hover, .sound-toggle:focus-visible { background: var(--surface-2); color: var(--text); }
+/* Notification sound switch (chime.js), off by default. */
+.sound-toggle { margin-left: 0; }
+.sound-toggle[aria-pressed="true"] { color: var(--accent); }
 .theme-toggle[hidden] { display: none; }
 .pa-head .home-link { margin-right: 4px; }
 .pa-head > .pa-title { flex: 1; min-width: 0; }

@@ -1,6 +1,7 @@
 // Press box viewer: read-only, no login, updates live.
 import { watchGame, watchSubs } from './store.js';
 import { rememberGame } from './recent.js';
+import { chime } from './chime.js';
 import { escapeHtml, playerLabel, toCsv, slug } from './lib.js';
 import { applyTeamColors, glanceCard, teamName, divisionLabel, doneNewestFirst, doneOldestFirst, timeOfDay, minuteLabel, inOutOrder, agoLabel } from './render.js';
 
@@ -138,6 +139,7 @@ function render() {
     if (latestBatch && latestBatch !== shownBatch) {
         if (shownBatch !== undefined) {
             highlightLatest(HIGHLIGHT_MS);
+            chime();
         } else if (latest[0].executedAt) {
             // Page opened just after a sub: highlight for what's left of
             // the 20 s.
