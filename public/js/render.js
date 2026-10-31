@@ -39,6 +39,16 @@ export function timeOfDay(sub) {
         : '';
 }
 
+// "3 minutes ago" for an age in ms (whole minutes, then hours).
+export function agoLabel(ms) {
+    const min = Math.max(0, Math.floor(ms / 60000));
+    if (min < 60) {
+        return min === 1 ? '1 minute ago' : min + ' minutes ago';
+    }
+    const hr = Math.floor(min / 60);
+    return hr === 1 ? '1 hour ago' : hr + ' hours ago';
+}
+
 // Match clock time as shown: "67:23" (older subs without seconds: "67’").
 export function minuteLabel(sub) {
     if (!sub.minute) {

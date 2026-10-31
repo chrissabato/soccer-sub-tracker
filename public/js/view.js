@@ -2,7 +2,7 @@
 import { watchGame, watchSubs } from './store.js';
 import { rememberGame } from './recent.js';
 import { escapeHtml, playerLabel, toCsv, slug } from './lib.js';
-import { applyTeamColors, glanceCard, teamName, divisionLabel, doneNewestFirst, doneOldestFirst, timeOfDay, minuteLabel, inOutOrder } from './render.js';
+import { applyTeamColors, glanceCard, teamName, divisionLabel, doneNewestFirst, doneOldestFirst, timeOfDay, minuteLabel, inOutOrder, agoLabel } from './render.js';
 
 const $ = (id) => document.getElementById(id);
 const gameId = new URLSearchParams(location.search).get('g') || '';
@@ -14,10 +14,29 @@ let shownBatch; // batch on screen; unset until the first subs snapshot
 let litTimer = null;
 const HIGHLIGHT_MS = 20000;
 
+// Once the dim-out ends, show how long ago the sub was executed.
+const FADE_MS = 62000; // glow fade 2 s + dim 60 s, after the highlight
+let fadeEndsAt = 0;
+let executedAtMs = 0;
+function tickAge() {
+    const el = $('latest-age');
+    const show = fadeEndsAt > 0 && Date.now() >= fadeEndsAt;
+    el.classList.toggle('hidden', !show);
+    if (show) {
+        const text = agoLabel(Date.now() - executedAtMs);
+        if (el.textContent !== text) {
+            el.textContent = text;
+        }
+    }
+}
+setInterval(tickAge, 1000);
+
 // Neon highlight on the latest-sub box for `ms`, then the glow fades and
 // the box contents dim to 10% over a minute (CSS).
 function highlightLatest(ms) {
     const box = $('latest');
+    fadeEndsAt = Date.now() + ms + FADE_MS;
+    tickAge();
     box.classList.remove('faded');
     box.style.removeProperty('--fade-delay');
     box.classList.add('lit', 'pulse');
@@ -34,6 +53,8 @@ function highlightLatest(ms) {
 // would be by now (a negative delay starts the transition part way in).
 function dimLatest(sinceHighlightEndMs) {
     const box = $('latest');
+    fadeEndsAt = Date.now() + FADE_MS - sinceHighlightEndMs;
+    tickAge();
     box.style.setProperty('--fade-delay', (2000 - sinceHighlightEndMs) + 'ms');
     requestAnimationFrame(() => box.classList.add('faded'));
 }
@@ -106,6 +127,14 @@ function render() {
     if (!subsLoaded) {
         return;
     }
+    if (latestBatch !== shownBatch) {
+        fadeEndsAt = 0; // a new highlight or dim-out sets it again
+        executedAtMs = Date.now();
+    }
+    if (latest.length && latest[0].executedAt) {
+        executedAtMs = latest[0].executedAt.toMillis();
+    }
+    tickAge();
     if (latestBatch && latestBatch !== shownBatch) {
         if (shownBatch !== undefined) {
             highlightLatest(HIGHLIGHT_MS);

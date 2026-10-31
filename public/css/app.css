@@ -344,10 +344,26 @@ body.viewer main { max-width: 1280px; }
 /* After the glow fades, dim the box's contents (not the card itself) to
    10% over 60 s. Opacity is only in this transition, so a new sub snaps
    them straight back to full. */
-.latest.faded > * {
+.latest.faded > :not(.sub-age) {
     opacity: .1;
     transition: opacity 60s linear var(--fade-delay, 2s);
 }
+/* "3 minutes ago", centered over the dimmed contents once the dim-out ends. */
+.latest, .pa-now { position: relative; }
+.sub-age {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(28px, 5vw, 72px);
+    font-weight: 800;
+    color: var(--text);
+    pointer-events: none;
+    animation: age-in 1s ease;
+}
+@keyframes age-in { from { opacity: 0; } }
 /* Neon highlight for 20 s after a new sub (see view.js). */
 .latest.lit {
     border-color: var(--neon);
@@ -554,7 +570,7 @@ body.pa-has-pending .pa-pending { flex: 2 1 0; }
 }
 .pa-now.lit.pulse { animation: neon-pulse 1.6s ease-in-out infinite alternate; }
 /* After the glow fades, dim the Now section's contents to 10% over 60 s (as .latest). */
-.pa-now.faded > * {
+.pa-now.faded > :not(.sub-age) {
     opacity: .1;
     transition: opacity 60s linear var(--fade-delay, 2s);
 }
