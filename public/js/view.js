@@ -3,7 +3,7 @@ import { watchGame, watchSubs } from './store.js';
 import { rememberGame } from './recent.js';
 import { chime } from './chime.js';
 import { escapeHtml, playerLabel, toCsv, slug } from './lib.js';
-import { applyTeamColors, glanceCard, teamName, divisionLabel, doneNewestFirst, doneOldestFirst, timeOfDay, minuteLabel, inOutOrder, agoLabel } from './render.js';
+import { applyTeamColors, glanceCard, teamName, divisionLabel, doneNewestFirst, doneOldestFirst, timeOfDay, minuteLabel, inOutOrder, agoLabel, byTeam } from './render.js';
 
 const $ = (id) => document.getElementById(id);
 const gameId = new URLSearchParams(location.search).get('g') || '';
@@ -123,7 +123,11 @@ function render() {
     $('latest').classList.toggle('hidden', latest.length === 0);
     if (latest.length) {
         $('latest-title').textContent = (latest.length === 1 ? 'Latest sub' : 'Latest subs') + ' · ' + latest[0].minute + (latest[0].minute.includes(':') ? '' : '’');
-        $('latest-subs').innerHTML = latest.map((s) => glanceCard(s, game)).join('');
+        $('latest-subs').innerHTML = byTeam(latest).map(([side, list]) => `
+          <div class="latest-team team-${side}">
+            <span class="team-tag">${escapeHtml(teamName(game, side))}</span>
+            <div class="latest-team-subs">${list.map((s) => glanceCard(s, game, { team: false })).join('')}</div>
+          </div>`).join('');
     }
     if (!subsLoaded) {
         return;

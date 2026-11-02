@@ -433,7 +433,9 @@ body.viewer main { max-width: 1280px; }
 .glance-for { font-size: 32px; line-height: 1; color: var(--muted); padding-bottom: 30px; }
 /* Equal-width cards, as many per row as fit; inside each, IN and OUT get
    equal halves so the numbers line up from card to card. */
-#latest-subs {
+#latest-subs { display: flex; flex-direction: column; gap: 16px; }
+.latest-team > .team-tag { font-size: 14px; margin-bottom: 8px; }
+.latest-team-subs {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
     gap: 16px 24px;
@@ -569,6 +571,16 @@ body.pa-has-pending .pa-pending { flex: 2 1 0; }
     align-content: start;
     gap: 12px 28px;
 }
+.pa-teams {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.pa-teams .pa-subs { flex: none; overflow: visible; }
+.pa-team > .team-tag { font-size: clamp(14px, 1.4vw, 24px); margin-bottom: 8px; }
 .pa-empty { color: var(--muted); font-size: clamp(18px, 2vw, 32px); margin: 0; }
 .pa-card {
     border-left: 8px solid var(--team);

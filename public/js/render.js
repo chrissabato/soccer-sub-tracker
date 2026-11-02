@@ -93,6 +93,14 @@ export function glanceCard(sub, game, opts = { team: true }) {
       </div>`;
 }
 
+// Subs split by team, home first, skipping a team with none:
+// [['home', [...]], ['away', [...]]].
+export function byTeam(subs) {
+    return ['home', 'away']
+        .map((side) => [side, subs.filter((s) => s.team === side)])
+        .filter(([, list]) => list.length);
+}
+
 export function divisionLabel(division) {
     return division === 'mens' ? "Men's soccer" : "Women's soccer";
 }

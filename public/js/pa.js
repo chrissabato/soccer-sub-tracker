@@ -3,7 +3,7 @@
 // is two big lines, IN and OUT, sized for reading names at a distance.
 import { watchGame, watchSubs } from './store.js';
 import { escapeHtml } from './lib.js';
-import { applyTeamColors, teamName, doneNewestFirst, minuteLabel, inOutOrder, agoLabel } from './render.js';
+import { applyTeamColors, teamName, doneNewestFirst, minuteLabel, inOutOrder, agoLabel, byTeam } from './render.js';
 import { rememberGame } from './recent.js';
 import { chime } from './chime.js';
 
@@ -32,10 +32,10 @@ function line(p, io, label) {
       </div>`;
 }
 
-function card(s) {
+function card(s, tag = true) {
     return `
       <div class="pa-card team-${s.team}">
-        <span class="team-tag">${escapeHtml(teamName(game, s.team))}</span>
+        ${tag ? `<span class="team-tag">${escapeHtml(teamName(game, s.team))}</span>` : ''}
         ${inOutOrder(game, line(s.playerIn, 'in', 'IN'), line(s.playerOut, 'out', 'OUT')).join('')}
       </div>`;
 }
@@ -91,12 +91,16 @@ function render() {
     const done = doneNewestFirst(subs);
     const latestBatch = done.length ? done[0].batchId : null;
     const latest = done.filter((s) => s.batchId === latestBatch);
-    $('now-subs').innerHTML = latest.map(card).join('');
+    $('now-subs').innerHTML = byTeam(latest).map(([side, list]) => `
+      <div class="pa-team team-${side}">
+        <span class="team-tag">${escapeHtml(teamName(game, side))}</span>
+        <div class="pa-subs">${list.map((s) => card(s, false)).join('')}</div>
+      </div>`).join('');
     $('now-empty').classList.toggle('hidden', latest.length > 0);
     $('now-time').innerHTML = latest.length ? '· ' + minuteLabel(latest[0]) : '';
 
     const pending = subs.filter((s) => s.status === 'pending');
-    $('pending-subs').innerHTML = pending.map(card).join('');
+    $('pending-subs').innerHTML = pending.map((s) => card(s)).join('');
     $('pending-empty').classList.toggle('hidden', pending.length > 0);
     document.body.classList.toggle('pa-has-pending', pending.length > 0);
 
