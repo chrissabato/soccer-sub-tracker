@@ -110,14 +110,18 @@ function render() {
     $('pending').classList.toggle('hidden', !anyPending);
 
     const done = doneNewestFirst(subs);
-    // One group per clock time: TOD and Clock once, spanning its rows.
-    $('log').innerHTML = byClock(done).map((group) => group.map((s, i) => `
-        <tr class="team-${s.team}${i === 0 ? ' clock-start' : ''}">
-          ${i === 0 ? `<td class="tod" rowspan="${group.length}">${escapeHtml(timeOfDay(s))}</td>
-          <td class="minute" rowspan="${group.length}">${minuteLabel(s)}</td>` : ''}
-          <td><span class="team-tag">${escapeHtml(teamName(game, s.team))}</span></td>
+    // One group per clock time, and within it one per team (home first):
+    // TOD and Clock once per clock group, the team badge once per team.
+    $('log').innerHTML = byClock(done).map((group) => {
+        const teams = byTeam(group);
+        return teams.map(([side, list], t) => list.map((s, i) => `
+        <tr class="team-${side}${t === 0 && i === 0 ? ' clock-start' : ''}">
+          ${t === 0 && i === 0 ? `<td class="tod" rowspan="${group.length}">${escapeHtml(timeOfDay(group[0]))}</td>
+          <td class="minute" rowspan="${group.length}">${minuteLabel(group[0])}</td>` : ''}
+          ${i === 0 ? `<td rowspan="${list.length}"><span class="team-tag">${escapeHtml(teamName(game, side))}</span></td>` : ''}
           ${inOutOrder(game, `<td>${escapeHtml(playerLabel(s.playerIn))}</td>`, `<td>${escapeHtml(playerLabel(s.playerOut))}</td>`).join('')}
         </tr>`).join('')).join('');
+    }).join('');
     [$('col-a').textContent, $('col-b').textContent] = inOutOrder(game, 'In', 'Out');
     $('log-empty').classList.toggle('hidden', done.length > 0);
     $('print').disabled = $('export').disabled = done.length === 0;
