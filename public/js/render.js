@@ -105,13 +105,24 @@ export function byTeam(subs) {
 // at the same match clock time (a second wave at one stoppage joins the
 // first). `done` is newest first. Subs without a clock time group by batch.
 export function latestSubs(done) {
-    if (!done.length) {
-        return [];
-    }
-    const first = done[0];
-    const same = (s) => (first.minute ? s.minute === first.minute : s.batchId === first.batchId);
-    const end = done.findIndex((s) => !same(s));
-    return end === -1 ? done : done.slice(0, end);
+    return done.length ? byClock(done)[0] : [];
+}
+
+// Executed subs split into runs that share a match clock time (subs
+// without one: a run per batch), keeping their order.
+export function byClock(done) {
+    const groups = [];
+    let prev = null;
+    done.forEach((s) => {
+        const same = prev && (prev.minute ? s.minute === prev.minute : s.batchId === prev.batchId);
+        if (same) {
+            groups[groups.length - 1].push(s);
+        } else {
+            groups.push([s]);
+            prev = s;
+        }
+    });
+    return groups;
 }
 
 export function divisionLabel(division) {

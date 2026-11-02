@@ -458,6 +458,8 @@ body.viewer main { max-width: 1280px; }
 
 .log td { font-size: 16px; }
 .log td.tod { color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; width: 96px; }
+.log td[rowspan] { vertical-align: top; }
+.log tr.clock-start:not(:first-child) td { border-top: 2px solid var(--border); }
 .log td.minute { font-weight: 700; font-variant-numeric: tabular-nums; width: 64px; }
 
 .qr { background: #fff; padding: 8px; display: inline-block; border-radius: 8px; }

@@ -3,7 +3,7 @@ import { watchGame, watchSubs } from './store.js';
 import { rememberGame } from './recent.js';
 import { chime } from './chime.js';
 import { escapeHtml, playerLabel, toCsv, slug } from './lib.js';
-import { applyTeamColors, glanceCard, teamName, divisionLabel, doneNewestFirst, doneOldestFirst, timeOfDay, minuteLabel, inOutOrder, agoLabel, byTeam, latestSubs } from './render.js';
+import { applyTeamColors, glanceCard, teamName, divisionLabel, doneNewestFirst, doneOldestFirst, timeOfDay, minuteLabel, inOutOrder, agoLabel, byTeam, latestSubs, byClock } from './render.js';
 
 const $ = (id) => document.getElementById(id);
 const gameId = new URLSearchParams(location.search).get('g') || '';
@@ -110,13 +110,14 @@ function render() {
     $('pending').classList.toggle('hidden', !anyPending);
 
     const done = doneNewestFirst(subs);
-    $('log').innerHTML = done.map((s) => `
-        <tr class="team-${s.team}">
-          <td class="tod">${escapeHtml(timeOfDay(s))}</td>
-          <td class="minute">${minuteLabel(s)}</td>
+    // One group per clock time: TOD and Clock once, spanning its rows.
+    $('log').innerHTML = byClock(done).map((group) => group.map((s, i) => `
+        <tr class="team-${s.team}${i === 0 ? ' clock-start' : ''}">
+          ${i === 0 ? `<td class="tod" rowspan="${group.length}">${escapeHtml(timeOfDay(s))}</td>
+          <td class="minute" rowspan="${group.length}">${minuteLabel(s)}</td>` : ''}
           <td><span class="team-tag">${escapeHtml(teamName(game, s.team))}</span></td>
           ${inOutOrder(game, `<td>${escapeHtml(playerLabel(s.playerIn))}</td>`, `<td>${escapeHtml(playerLabel(s.playerOut))}</td>`).join('')}
-        </tr>`).join('');
+        </tr>`).join('')).join('');
     [$('col-a').textContent, $('col-b').textContent] = inOutOrder(game, 'In', 'Out');
     $('log-empty').classList.toggle('hidden', done.length > 0);
     $('print').disabled = $('export').disabled = done.length === 0;
