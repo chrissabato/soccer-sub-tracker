@@ -3,7 +3,7 @@ import { watchGame, watchSubs } from './store.js';
 import { rememberGame } from './recent.js';
 import { chime } from './chime.js';
 import { escapeHtml, playerLabel, toCsv, slug } from './lib.js';
-import { applyTeamColors, glanceCard, teamName, divisionLabel, doneNewestFirst, doneOldestFirst, timeOfDay, minuteLabel, inOutOrder, agoLabel, byTeam } from './render.js';
+import { applyTeamColors, glanceCard, teamName, divisionLabel, doneNewestFirst, doneOldestFirst, timeOfDay, minuteLabel, inOutOrder, agoLabel, byTeam, latestSubs } from './render.js';
 
 const $ = (id) => document.getElementById(id);
 const gameId = new URLSearchParams(location.search).get('g') || '';
@@ -117,9 +117,9 @@ function render() {
     $('log-empty').classList.toggle('hidden', done.length > 0);
     $('print').disabled = $('export').disabled = done.length === 0;
 
-    // Latest = every sub from the most recent stoppage (one execute tap).
+    // Latest = the most recent stoppage, plus any earlier waves at the same clock time.
     const latestBatch = done.length ? done[0].batchId : null;
-    const latest = done.filter((s) => s.batchId === latestBatch);
+    const latest = latestSubs(done);
     $('latest').classList.toggle('hidden', latest.length === 0);
     if (latest.length) {
         $('latest-title').textContent = (latest.length === 1 ? 'Latest sub' : 'Latest subs') + ' · ' + latest[0].minute + (latest[0].minute.includes(':') ? '' : '’');

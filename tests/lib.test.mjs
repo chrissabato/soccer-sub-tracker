@@ -148,3 +148,12 @@ test('rankByName: prefix, then word start, then anywhere', () => {
     assert.deepEqual(names('(x'), []); // regex characters are literal
     assert.equal(rankByName(items, 'u', undefined, 2).length, 2);
 });
+
+test('latestSubs merges waves executed at the same clock time', async () => {
+    const { latestSubs } = await import('../public/js/render.js');
+    const s = (id, minute, batchId) => ({ id, minute, batchId });
+    assert.deepEqual(latestSubs([]), []);
+    const done = [s('c', '67:23', 'b2'), s('b', '67:23', 'b1'), s('a', '60:00', 'b0')];
+    assert.deepEqual(latestSubs(done).map((x) => x.id), ['c', 'b']);
+    assert.deepEqual(latestSubs([s('b', '', 'b1'), s('a', '', 'b0')]).map((x) => x.id), ['b']);
+});

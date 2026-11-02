@@ -101,6 +101,19 @@ export function byTeam(subs) {
         .filter(([, list]) => list.length);
 }
 
+// The active subs: the newest stoppage, plus any earlier waves executed
+// at the same match clock time (a second wave at one stoppage joins the
+// first). `done` is newest first. Subs without a clock time group by batch.
+export function latestSubs(done) {
+    if (!done.length) {
+        return [];
+    }
+    const first = done[0];
+    const same = (s) => (first.minute ? s.minute === first.minute : s.batchId === first.batchId);
+    const end = done.findIndex((s) => !same(s));
+    return end === -1 ? done : done.slice(0, end);
+}
+
 export function divisionLabel(division) {
     return division === 'mens' ? "Men's soccer" : "Women's soccer";
 }

@@ -3,7 +3,7 @@
 // is two big lines, IN and OUT, sized for reading names at a distance.
 import { watchGame, watchSubs } from './store.js';
 import { escapeHtml } from './lib.js';
-import { applyTeamColors, teamName, doneNewestFirst, minuteLabel, inOutOrder, agoLabel, byTeam } from './render.js';
+import { applyTeamColors, teamName, doneNewestFirst, minuteLabel, inOutOrder, agoLabel, byTeam, latestSubs } from './render.js';
 import { rememberGame } from './recent.js';
 import { chime } from './chime.js';
 
@@ -90,7 +90,7 @@ function render() {
     }
     const done = doneNewestFirst(subs);
     const latestBatch = done.length ? done[0].batchId : null;
-    const latest = done.filter((s) => s.batchId === latestBatch);
+    const latest = latestSubs(done);
     $('now-subs').innerHTML = byTeam(latest).map(([side, list]) => `
       <div class="pa-team team-${side}">
         <span class="team-tag">${escapeHtml(teamName(game, side))}</span>
