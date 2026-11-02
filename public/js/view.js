@@ -99,11 +99,15 @@ function render() {
     if (!game) {
         return;
     }
+    // Pending panels only for a team that has pending subs.
+    let anyPending = false;
     ['home', 'away'].forEach((side) => {
         const pending = subs.filter((s) => s.status === 'pending' && s.team === side);
         $('pending-' + side).innerHTML = pending.map((s) => glanceCard(s, game, { team: false })).join('');
-        $('pending-' + side + '-empty').classList.toggle('hidden', pending.length > 0);
+        $('pending-' + side + '-card').classList.toggle('hidden', pending.length === 0);
+        anyPending = anyPending || pending.length > 0;
     });
+    $('pending').classList.toggle('hidden', !anyPending);
 
     const done = doneNewestFirst(subs);
     $('log').innerHTML = done.map((s) => `

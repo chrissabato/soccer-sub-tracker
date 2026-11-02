@@ -20,24 +20,22 @@
 <main>
   <p id="error" class="error" role="alert"></p>
 
+  <div id="pending" class="grid-2 hidden">
+    <section id="pending-home-card" class="card team-home hidden">
+      <h2><span class="team-tag" id="home-name">Home</span> pending</h2>
+      <div id="pending-home"></div>
+    </section>
+    <section id="pending-away-card" class="card team-away hidden">
+      <h2><span class="team-tag" id="away-name">Away</span> pending</h2>
+      <div id="pending-away"></div>
+    </section>
+  </div>
+
   <section id="latest" class="latest hidden" aria-live="polite">
     <h2 id="latest-title">Latest sub</h2>
     <div id="latest-subs"></div>
     <p id="latest-age" class="sub-age hidden"></p>
   </section>
-
-  <div class="grid-2">
-    <section class="card team-home">
-      <h2><span class="team-tag" id="home-name">Home</span> pending</h2>
-      <div id="pending-home"></div>
-      <p id="pending-home-empty" class="muted">None</p>
-    </section>
-    <section class="card team-away">
-      <h2><span class="team-tag" id="away-name">Away</span> pending</h2>
-      <div id="pending-away"></div>
-      <p id="pending-away-empty" class="muted">None</p>
-    </section>
-  </div>
 
   <section class="card">
     <div class="card-head">
